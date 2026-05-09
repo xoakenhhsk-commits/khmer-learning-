@@ -1,10 +1,16 @@
 import type { Metadata, Viewport } from "next";
-import { Inter } from "next/font/google";
+import { Inter, Kantumruy_Pro } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "react-hot-toast";
 import { ThemeProvider } from "@/components/ThemeProvider";
 
-const inter = Inter({ subsets: ["latin"] });
+const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
+const khmerFont = Kantumruy_Pro({ 
+  subsets: ["khmer", "latin"], 
+  weight: ["400", "700"],
+  variable: "--font-khmer"
+});
+
 
 export const metadata: Metadata = {
   title: "KhmerLearn – Học Tiếng Khmer Miễn Phí",
@@ -32,7 +38,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
       </head>
-      <body className={`${inter.className} antialiased`}>
+      <body className={`${inter.variable} ${khmerFont.variable} font-sans antialiased`}>
+
         <ThemeProvider>
           {children}
           <Toaster
