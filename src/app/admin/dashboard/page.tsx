@@ -1,11 +1,134 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Upload, FileText, Database, Plus, LogOut, Loader2, Book, FileSpreadsheet, Languages, AlignLeft } from "lucide-react";
+import { Upload, FileText, Database, Plus, LogOut, Loader2, Book, FileSpreadsheet, Languages, AlignLeft, Sparkles } from "lucide-react";
 import toast from "react-hot-toast";
 import { useStore } from "@/store/useStore"; 
 import { db } from "@/lib/firebase";
 import { collection, addDoc, serverTimestamp, getDocs, query, orderBy } from "firebase/firestore";
+import { cn } from "@/lib/utils";
+import { LESSONS, CATEGORIES } from "@/lib/data";
+
+// ===== DỮ LIỆU MẪU 3 CÂU CHUYỆN KHMER =====
+const SAMPLE_STORIES = [
+  {
+    titleKh: "ការជួបជុំ",
+    titleVi: "Gặp Gỡ Bạn Bè",
+    contentKh: `សួស្តី! តើអ្នកសុខសប្បាយទេ?
+ខ្ញុំសុខសប្បាយ អរគុណ។ តើអ្នកវិញ?
+ខ្ញុំក៏សុខសប្បាយដែរ។ យូរណាស់ហើយ មិនបានជួបអ្នក។
+បាទ ខ្ញុំរវល់ណាស់ ព្រោះធ្វើការច្រើន។
+ថ្ងៃនេះ មានពេលទំនេរ ហើយក៏នឹករលឹក ចង់ជួបអ្នក។
+តើអ្នកទៅផឹកកាហ្វេជាមួយខ្ញុំ ថ្ងៃស្អែកបានទេ?
+បាទ ខ្ញុំចង់ទៅ! យើងជួបគ្នា នៅហាងកាហ្វេ ម៉ោងប្រាំ។`,
+    meaningVi: `Xin chào! Bạn có khỏe không?
+Tôi khỏe, cảm ơn. Còn bạn thì sao?
+Tôi cũng khỏe. Đã lâu lắm rồi mình không gặp nhau.
+Vâng, tôi bận lắm vì làm việc nhiều.
+Hôm nay có thời gian rảnh nên cũng nhớ, muốn gặp bạn.
+Bạn có đi uống cà phê với tôi ngày mai không?
+Vâng, tôi muốn đi! Chúng ta gặp nhau ở quán cà phê lúc 5 giờ.`,
+    wordMeanings: {
+      "សួស្តី": { vi: "Xin chào", phonetic: "suo-sdei" },
+      "អ្នក": { vi: "Bạn / Anh / Chị", phonetic: "neak" },
+      "សុខសប្បាយ": { vi: "Khỏe mạnh", phonetic: "sok-sabay" },
+      "ខ្ញុំ": { vi: "Tôi", phonetic: "knhom" },
+      "អរគុណ": { vi: "Cảm ơn", phonetic: "or-kun" },
+      "យូរ": { vi: "Lâu", phonetic: "yur" },
+      "ជួប": { vi: "Gặp", phonetic: "chuob" },
+      "រវល់": { vi: "Bận rộn", phonetic: "ro-vol" },
+      "ធ្វើការ": { vi: "Làm việc", phonetic: "tveu-kar" },
+      "ទំនេរ": { vi: "Rảnh rang", phonetic: "tom-ner" },
+      "នឹករលឹក": { vi: "Nhớ", phonetic: "nung-ro-lung" },
+      "ផឹក": { vi: "Uống", phonetic: "phoek" },
+      "កាហ្វេ": { vi: "Cà phê", phonetic: "ka-fe" },
+      "ថ្ងៃស្អែក": { vi: "Ngày mai", phonetic: "tngai-saek" },
+      "ហាង": { vi: "Quán / Cửa hàng", phonetic: "hang" },
+      "ម៉ោង": { vi: "Giờ (đồng hồ)", phonetic: "maong" },
+      "ប្រាំ": { vi: "Năm", phonetic: "pram" },
+      "យើង": { vi: "Chúng ta", phonetic: "yeung" }
+    }
+  },
+  {
+    titleKh: "ព្រឹកព្រហាម",
+    titleVi: "Buổi Sáng Gia Đình",
+    contentKh: `ព្រឹកព្រហាម ម្តាយ ក្រោកឡើងជាមុន ហើយចំអិនអាហារ។
+ក្លិនបាយ ដូចជាប្រាប់ ឱ្យក្រោក ពីដំណេក។
+ឪពុក ត្រៀមខ្លួន ទៅធ្វើការ ហើយពាក់សម្លៀកបំពាក់ ស្ស្អាត។
+កូន ពីរ នាក់ ក្រោកឡើង ហើយ ដើរ ទៅ បន្ទប់ ទឹក ។
+គ្រួសារ ទាំងមូល អង្គុយ ញ៉ាំ អាហារ ព្រឹក ជាមួយ គ្នា ។
+ម្តាយ ធ្វើ បាយ ស្ករ និង ស៊ុបបន្លែ ឆ្ងាញ់ ណាស់ ។
+បន្ទាប់ ពី ញ៉ាំ ចប់ គ្រួសារ ចាក ចេញ ក្នុង ថ្ងៃ ថ្មី ។`,
+    meaningVi: `Buổi sáng sớm, mẹ dậy trước và nấu cơm.
+Mùi cơm như báo hiệu mọi người thức dậy.
+Bố chuẩn bị đi làm và mặc quần áo gọn gàng.
+Hai đứa con thức dậy rồi đi vào phòng tắm.
+Cả gia đình ngồi ăn bữa sáng cùng nhau.
+Mẹ nấu cháo ngọt và canh rau rất ngon.
+Sau khi ăn xong, gia đình bắt đầu một ngày mới.`,
+    wordMeanings: {
+      "ព្រឹកព្រហាម": { vi: "Sáng sớm", phonetic: "proek-pro-ham" },
+      "ម្តាយ": { vi: "Mẹ", phonetic: "m-day" },
+      "ក្រោក": { vi: "Thức dậy", phonetic: "kraok" },
+      "ចំអិន": { vi: "Nấu nướng", phonetic: "chom-aen" },
+      "អាហារ": { vi: "Thức ăn / Bữa ăn", phonetic: "a-har" },
+      "ក្លិន": { vi: "Mùi hương", phonetic: "klen" },
+      "បាយ": { vi: "Cơm", phonetic: "bay" },
+      "ឪពុក": { vi: "Bố / Cha", phonetic: "ow-puk" },
+      "ត្រៀម": { vi: "Chuẩn bị", phonetic: "triem" },
+      "ធ្វើការ": { vi: "Đi làm", phonetic: "tveu-kar" },
+      "សម្លៀកបំពាក់": { vi: "Quần áo", phonetic: "som-liek-bom-peak" },
+      "កូន": { vi: "Con cái", phonetic: "koun" },
+      "គ្រួសារ": { vi: "Gia đình", phonetic: "krou-sar" },
+      "អង្គុយ": { vi: "Ngồi", phonetic: "ong-kuy" },
+      "ញ៉ាំ": { vi: "Ăn", phonetic: "nyam" },
+      "ស៊ុប": { vi: "Canh / Súp", phonetic: "soup" },
+      "បន្លែ": { vi: "Rau củ", phonetic: "bon-lae" },
+      "ឆ្ងាញ់": { vi: "Ngon", phonetic: "chhnganyh" }
+    }
+  },
+  {
+    titleKh: "ទៅផ្សារ",
+    titleVi: "Đi Chợ Buổi Sáng",
+    contentKh: `ព្រឹក ម្លេះ ម្តាយ ហៅ ខ្ញុំ ទៅ ផ្សារ ជាមួយ ។
+ផ្សារ នៅ ជិត ផ្ទះ ខ្ញុំ ដើរ ប្រហែល ដប់ នាទី ។
+បន្លែ ស្រស់ ៗ ជួរ ដែរ ព្រម ២ ្ម ត្រី ផ្សេង ៗ ។
+ម្តាយ ចូលចិត្ត ទិញ ត្រី ព្រោះ ធ្វើ ម្ហូប ឆ្ងាញ់ ។
+តើ ត្រី នេះ ថ្លៃ ប៉ុន្មាន ? ខ្ញុំ សួរ ម្ចាស់ ហាង ។
+ដប់ ពាន់ រៀល ក្នុង មួយ គីឡូ ។ លោក ម្ចាស់ ហាង ឆ្លើយ ។
+ម្តាយ ទិញ ត្រី មួយ គីឡូ ហើយ ថែម ផ្លែ ឈើ ផ្សេង ទៀត ។
+យើង វិល ត្រ ឡប់ ផ្ទះ ស្រួល ចិត្ត ។`,
+    meaningVi: `Sáng sớm mẹ gọi tôi đi chợ cùng.
+Chợ ở gần nhà, đi bộ khoảng mười phút.
+Rau tươi xếp hàng cùng với các loại cá khác nhau.
+Mẹ thích mua cá vì nấu món ăn rất ngon.
+Cá này giá bao nhiêu? Tôi hỏi người bán hàng.
+Mười nghìn riel một ký. Chủ hàng trả lời.
+Mẹ mua một ký cá và thêm các loại trái cây.
+Chúng tôi trở về nhà với tâm trạng vui vẻ.`,
+    wordMeanings: {
+      "ផ្សារ": { vi: "Chợ", phonetic: "psar" },
+      "ជិត": { vi: "Gần", phonetic: "chet" },
+      "ផ្ទះ": { vi: "Nhà", phonetic: "pteah" },
+      "ដើរ": { vi: "Đi bộ", phonetic: "daer" },
+      "ដប់": { vi: "Mười", phonetic: "dop" },
+      "នាទី": { vi: "Phút", phonetic: "nea-tee" },
+      "ស្រស់": { vi: "Tươi", phonetic: "sros" },
+      "ត្រី": { vi: "Cá", phonetic: "trey" },
+      "ចូលចិត្ត": { vi: "Thích", phonetic: "joul-jit" },
+      "ទិញ": { vi: "Mua", phonetic: "tinh" },
+      "ម្ហូប": { vi: "Món ăn", phonetic: "mhoup" },
+      "ថ្លៃ": { vi: "Đắt / Giá tiền", phonetic: "thlai" },
+      "សួរ": { vi: "Hỏi", phonetic: "sour" },
+      "រៀល": { vi: "Riel (tiền tệ)", phonetic: "riel" },
+      "គីឡូ": { vi: "Kilogram", phonetic: "kee-lo" },
+      "ឆ្លើយ": { vi: "Trả lời", phonetic: "chhlaey" },
+      "ផ្លែឈើ": { vi: "Trái cây", phonetic: "plae-chher" },
+      "ស្រួល": { vi: "Thoải mái", phonetic: "sruol" },
+      "ចិត្ត": { vi: "Tâm trạng / Lòng", phonetic: "jet" }
+    }
+  }
+];
 
 export default function AdminDashboard() {
   const navigate = useNavigate();
@@ -37,12 +160,10 @@ export default function AdminDashboard() {
 
   const fetchData = async () => {
     try {
-      const res = await fetch("/api/admin/save");
-      const data = await res.json();
-      if (data.lessons) setLessons(data.lessons);
-      if (data.categories) setCategories(data.categories);
-      if (data.lessons && data.lessons.length > 0) {
-        setSelectedLessonId(data.lessons[0].id);
+      setLessons(LESSONS);
+      setCategories(CATEGORIES);
+      if (LESSONS && LESSONS.length > 0) {
+        setSelectedLessonId(LESSONS[0].id);
       }
     } catch (err) {
       console.error("Fetch error:", err);
@@ -134,7 +255,8 @@ export default function AdminDashboard() {
                 }
               });
 
-              const titleParts = String(row[0] || "").split("-");
+              const titleRaw = String(row[0] || "");
+              const titleParts = titleRaw.split(/[,|\-|/]/);
 
               return {
                 titleKh: titleParts[0]?.trim() || "Chưa có tên",
@@ -174,6 +296,22 @@ export default function AdminDashboard() {
       setStories([]);
     } catch (err: any) {
       toast.error("Lỗi khi lưu: " + err.message, { id: toastId });
+    }
+  };
+
+  const handleSeedSampleStories = async () => {
+    const toastId = toast.loading("Đang tạo 3 câu chuyện mẫu...");
+    try {
+      for (const story of SAMPLE_STORIES) {
+        await addDoc(collection(db, "stories"), {
+          ...story,
+          createdAt: new Date().toISOString(),
+          serverTimestamp: serverTimestamp()
+        });
+      }
+      toast.success("✅ Đã tạo 3 câu chuyện mẫu thành công!", { id: toastId });
+    } catch (err: any) {
+      toast.error("Lỗi: " + err.message, { id: toastId });
     }
   };
 
@@ -359,6 +497,24 @@ export default function AdminDashboard() {
                 <input type="file" className="hidden" accept=".xlsx, .xls" onChange={handleExcelStories} />
               </label>
             </div>
+          </div>
+
+          {/* Seed Sample Stories */}
+          <div className="bg-gradient-to-br from-amber-50 to-orange-50 rounded-2xl p-6 shadow-sm border-2 border-amber-200">
+            <h2 className="text-lg font-black mb-2 flex items-center gap-2">
+              <Sparkles className="text-amber-500" /> Truyện Mẫu Có Sẵn
+            </h2>
+            <p className="text-sm text-gray-600 mb-4">
+              Tạo ngay <strong>3 câu chuyện đầy đủ</strong> với từ vựng có thể click được:
+              <br />
+              <span className="text-xs text-gray-500">📖 Gặp Gỡ Bạn Bè &nbsp;|&nbsp; 🏠 Buổi Sáng Gia Đình &nbsp;|&nbsp; 🛒 Đi Chợ</span>
+            </p>
+            <button
+              onClick={handleSeedSampleStories}
+              className="w-full py-3 rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-black flex items-center justify-center gap-2 transition-all shadow-md hover:shadow-lg"
+            >
+              <Sparkles size={20} /> Tạo 3 Truyện Mẫu Ngay
+            </button>
           </div>
         </div>
 
