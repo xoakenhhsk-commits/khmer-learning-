@@ -169,7 +169,7 @@ export function Flashcard({ vocab, onNext, onPrev, current = 1, total = 1 }: Fla
                         className="khmer-text text-base font-bold mb-1 leading-relaxed cursor-pointer hover:text-green-600 transition-colors"
                         onClick={(e) => {
                           e.stopPropagation();
-                          playTTS(vocab.exampleKh);
+                          if (vocab.exampleKh) playTTS(vocab.exampleKh);
                         }}
                       >
                         {vocab.exampleKh}
