@@ -11,6 +11,8 @@ import StatsPage from './app/stats/page';
 import ProfilePage from './app/profile/page';
 import LessonsPage from './app/lessons/page';
 import LessonPage from './app/lessons/[id]/page';
+import StoriesPage from './app/stories/page';
+import StoryDetailPage from './app/stories/[id]/page';
 
 function App() {
   return (
@@ -26,6 +28,8 @@ function App() {
         <Route path="/profile" element={<ProfilePage />} />
         <Route path="/lessons" element={<LessonsPage />} />
         <Route path="/lessons/:id" element={<LessonPage />} />
+        <Route path="/stories" element={<StoriesPage />} />
+        <Route path="/stories/:id" element={<StoryDetailPage />} />
         <Route path="/admin" element={<AdminLoginPage />} />
         <Route path="/admin/dashboard" element={<AdminDashboard />} />
         <Route path="*" element={<div>Page Not Found</div>} />

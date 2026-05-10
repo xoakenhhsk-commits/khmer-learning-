@@ -6,6 +6,7 @@ import { BookOpen, Home, Trophy, User, Zap, BarChart2, Library, Heart } from "lu
 const navItems = [
   { href: "/learn", icon: Home, label: "Trang chủ" },
   { href: "/lessons", icon: BookOpen, label: "Bài học" },
+  { href: "/stories", icon: BookOpen, label: "Truyện" },
   { href: "/vocabulary", icon: Library, label: "Từ điển" },
   { href: "/leaderboard", icon: Trophy, label: "Xếp hạng" },
   { href: "/stats", icon: BarChart2, label: "Thống kê" },

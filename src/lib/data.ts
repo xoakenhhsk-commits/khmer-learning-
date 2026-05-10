@@ -12,6 +12,17 @@ export type VocabItem = {
   difficulty: number;
 };
 
+export type Story = {
+  id: string;
+  titleKh: string;
+  titleVi: string;
+  contentKh: string;
+  meaningVi: string;
+  wordMeanings: { [word: string]: { vi: string; phonetic: string } };
+  author?: string;
+  createdAt?: string;
+};
+
 export const CATEGORIES = [
   { id: "1", name: "Greetings", nameKh: "ការស្វាគមន៍", icon: "👋", color: "#58CC02", order: 1 },
   { id: "2", name: "Numbers", nameKh: "លេខ", icon: "🔢", color: "#FF9600", order: 2 },
