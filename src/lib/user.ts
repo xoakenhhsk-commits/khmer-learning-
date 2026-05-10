@@ -7,32 +7,40 @@ import { User } from "@/store/useStore";
  */
 export async function syncUserProfile(user: User) {
   if (!user.id) return;
-  const userRef = doc(db, "users", user.id);
-  const userSnap = await getDoc(userRef);
+  
+  try {
+    const userRef = doc(db, "users", user.id);
+    const userSnap = await getDoc(userRef);
 
-  if (userSnap.exists()) {
-    // Merge existing data with local data (Firestore is source of truth for XP/Level usually)
-    const data = userSnap.data();
-    return {
-      ...user,
-      xp: data.xp || user.xp,
-      level: data.level || user.level,
-      streakDays: data.streakDays || user.streakDays,
-      completedLessons: data.completedLessons || [],
-    };
-  } else {
-    // Create new profile
-    await setDoc(userRef, {
-      name: user.name,
-      email: user.email,
-      avatar: user.avatar || "",
-      xp: user.xp || 0,
-      level: user.level || 1,
-      streakDays: user.streakDays || 0,
-      role: user.role || "USER",
-      completedLessons: [],
-      createdAt: new Date().toISOString(),
-    });
+    if (userSnap.exists()) {
+      // Merge existing data with local data (Firestore is source of truth for XP/Level usually)
+      const data = userSnap.data();
+      return {
+        ...user,
+        xp: data.xp || user.xp,
+        level: data.level || user.level,
+        streakDays: data.streakDays || user.streakDays,
+        completedLessons: data.completedLessons || [],
+      };
+    } else {
+      // Create new profile
+      const newUser = {
+        name: user.name,
+        email: user.email,
+        avatar: user.avatar || "",
+        xp: user.xp || 0,
+        level: user.level || 1,
+        streakDays: user.streakDays || 0,
+        role: user.role || "USER",
+        completedLessons: [],
+        createdAt: new Date().toISOString(),
+      };
+      await setDoc(userRef, newUser);
+      return { ...user, ...newUser };
+    }
+  } catch (error: any) {
+    console.error("Firestore sync error:", error);
+    // If it's a connection error, return the local user data so they can still play
     return user;
   }
 }
