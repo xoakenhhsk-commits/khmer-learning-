@@ -29,10 +29,10 @@ export default function VocabularyPage() {
       <main className="flex-1 ml-0 md:ml-64 main-content">
         <div className="p-6 max-w-4xl mx-auto">
           
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8 mt-4">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 sm:gap-4 mb-6 sm:mb-8 mt-4">
             <div>
-              <h1 className="text-3xl font-black tracking-tight mb-1">Từ điển Khmer</h1>
-              <p className="text-sm font-medium" style={{ color: "var(--text-muted)" }}>
+              <h1 className="text-2xl sm:text-3xl font-black tracking-tight mb-1">Từ điển Khmer</h1>
+              <p className="text-xs sm:text-sm font-medium" style={{ color: "var(--text-muted)" }}>
                 Tìm kiếm và luyện phát âm tất cả các từ đã học
               </p>
             </div>
@@ -48,7 +48,7 @@ export default function VocabularyPage() {
             </div>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 pb-24">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 pb-24">
             <AnimatePresence mode="popLayout">
               {filteredVocab.map((v) => (
                 <motion.div

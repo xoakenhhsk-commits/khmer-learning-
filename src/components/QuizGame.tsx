@@ -83,7 +83,7 @@ export function QuizGame({ vocab, onComplete }: QuizProps) {
       setTimeout(() => playTTS(q.vocab.khmerWord), 500);
     }
 
-    setTimeout(() => {
+    setTimeout(async () => {
       if (current < questions.length - 1) {
         setCurrent((c) => c + 1);
         setSelected(null);
@@ -91,11 +91,21 @@ export function QuizGame({ vocab, onComplete }: QuizProps) {
       } else {
         const finalScore = correct ? score + 1 : score;
         const xpEarned = finalScore * 10 + (finalScore === questions.length ? 20 : 0);
+        
+        // Update local store
         addXP(xpEarned);
+        
+        // Sync with Firestore if logged in
+        const state = useStore.getState();
+        if (state.user && state.user.id !== "demo-1") {
+          const { updateUserStats } = await import("@/lib/user");
+          await updateUserStats(state.user.id, { xp: state.user.xp });
+        }
+
         setShowResult(true);
         onComplete(finalScore, xpEarned);
       }
-    }, 1800); // Increased delay to allow audio to finish
+    }, 1800);
   };
 
   if (showResult) {
@@ -152,8 +162,15 @@ export function QuizGame({ vocab, onComplete }: QuizProps) {
             </p>
 
             <div className="flex items-center justify-center gap-3 mb-2">
-              <p className={cn("font-black", q.type === "kh_to_vi" ? "khmer-text text-5xl" : "text-3xl")}
-                style={{ color: "var(--text)" }}>
+              <p className={cn("font-black cursor-pointer hover:opacity-70 transition-opacity", q.type === "kh_to_vi" ? "khmer-text text-5xl" : "text-3xl")}
+                style={{ color: "var(--text)" }}
+                onClick={(e) => {
+                  if (q.type === "kh_to_vi") {
+                    e.stopPropagation();
+                    handleSpeak();
+                  }
+                }}
+              >
                 {q.type === "kh_to_vi" ? q.vocab.khmerWord : q.vocab.meaningVi}
               </p>
 

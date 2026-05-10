@@ -1,19 +1,17 @@
-"use client";
 import { motion } from "framer-motion";
 import { useStore } from "@/store/useStore";
-import { useRouter } from "next/navigation";
+import { useNavigate, Link } from "react-router-dom";
 import { useEffect } from "react";
 import { Sidebar, BottomNav } from "@/components/Navigation";
 import { LESSONS, CATEGORIES } from "@/lib/data";
-import Link from "next/link";
 import { Lock, CheckCircle, Zap, BookOpen } from "lucide-react";
 
 export default function LessonsPage() {
   const { user, isAuthenticated, completedLessons } = useStore();
-  const router = useRouter();
+  const navigate = useNavigate();
 
   useEffect(() => {
-    if (!isAuthenticated) router.replace("/");
+    if (!isAuthenticated) navigate("/", { replace: true });
   }, [isAuthenticated]);
 
   if (!user) return null;
@@ -45,7 +43,7 @@ export default function LessonsPage() {
                 <motion.div key={lesson.id}
                   initial={{ x: -20, opacity: 0 }} animate={{ x: 0, opacity: 1 }}
                   transition={{ delay: i * 0.1 }}>
-                  <Link href={isUnlocked ? `/lessons/${lesson.id}` : "#"}
+                  <Link to={isUnlocked ? `/lessons/${lesson.id}` : "#"}
                     className={`card flex flex-col sm:flex-row items-center gap-6 relative overflow-hidden ${!isUnlocked ? "opacity-70 cursor-not-allowed grayscale-[0.5]" : "hover:scale-[1.01] hover:border-blue-400 transition-all shadow-md hover:shadow-lg"}`}>
                     
                     {/* Thumbnail / Icon */}

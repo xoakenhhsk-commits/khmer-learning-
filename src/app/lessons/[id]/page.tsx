@@ -1,5 +1,4 @@
-"use client";
-import { useParams, useRouter } from "next/navigation";
+import { useParams, useNavigate, Link } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { LESSONS, VOCABULARY } from "@/lib/data";
@@ -7,7 +6,6 @@ import { useStore } from "@/store/useStore";
 import { Flashcard } from "@/components/Flashcard";
 import { QuizGame } from "@/components/QuizGame";
 import { ArrowLeft, BookOpen, Brain, Trophy, Volume2, Loader2 } from "lucide-react";
-import Link from "next/link";
 import toast from "react-hot-toast";
 import { playTTS, cn } from "@/lib/utils";
 
@@ -16,7 +14,7 @@ type Mode = "overview" | "flashcard" | "quiz" | "result";
 export default function LessonPage() {
   const params = useParams();
   const id = params?.id as string;
-  const router = useRouter();
+  const navigate = useNavigate();
   const { addXP, completeLesson } = useStore();
   const [mode, setMode] = useState<Mode>("overview");
   const [cardIndex, setCardIndex] = useState(0);
@@ -44,7 +42,7 @@ export default function LessonPage() {
       <div className="text-center">
         <div className="text-6xl mb-4">😕</div>
         <h2 className="text-xl font-bold mb-4">Không tìm thấy bài học</h2>
-        <Link href="/learn" className="btn-primary">← Quay lại</Link>
+        <Link to="/learn" className="btn-primary">← Quay lại</Link>
       </div>
     </div>
   );
@@ -57,9 +55,19 @@ export default function LessonPage() {
     });
   };
 
-  const handleQuizComplete = (score: number, xp: number) => {
+  const handleQuizComplete = async (score: number, xp: number) => {
     setQuizResult({ score, xp });
     completeLesson(lesson.id);
+    
+    // Sync with Firestore if logged in
+    const state = useStore.getState();
+    if (state.user && state.user.id !== "demo-1") {
+      const { updateUserStats } = await import("@/lib/user");
+      await updateUserStats(state.user.id, { 
+        completedLessons: state.completedLessons 
+      });
+    }
+
     setTimeout(() => setMode("result"), 1500);
   };
 
@@ -68,7 +76,7 @@ export default function LessonPage() {
       {/* Header */}
       <div className="sticky top-0 z-40 px-4 py-3 flex items-center gap-4 border-b"
         style={{ background: "var(--card)", borderColor: "var(--border)" }}>
-        <Link href="/learn"
+        <Link to="/learn"
           className="p-2 rounded-xl hover:opacity-70 transition-opacity"
           style={{ background: "var(--bg-secondary)" }}>
           <ArrowLeft size={20} />
@@ -227,7 +235,7 @@ export default function LessonPage() {
                 </div>
               </div>
               <div className="space-y-3">
-                <button onClick={() => router.push("/learn")} className="btn-primary w-full text-base">
+                <button onClick={() => navigate("/learn")} className="btn-primary w-full text-base">
                   🏠 Về trang chủ
                 </button>
                 <button onClick={() => { setMode("overview"); setCardIndex(0); }}

@@ -51,107 +51,87 @@ export function isToday(date: Date): boolean {
 let currentAudio: HTMLAudioElement | null = null;
 
 export function playTTS(text: string, lang = "km"): Promise<void> {
+  if (!text) return Promise.resolve();
+
   return new Promise((resolve) => {
-    // Stop any currently playing audio
     if (currentAudio) {
-      currentAudio.pause();
+      try { currentAudio.pause(); currentAudio.src = ""; } catch (e) {}
       currentAudio = null;
     }
     if (typeof window !== "undefined" && "speechSynthesis" in window) {
       window.speechSynthesis.cancel();
     }
 
-    // Strategy 1: Google Translate TTS
-    const tryGoogleTTS = (): Promise<boolean> => {
+    // Strategy 1: Google Proxy (Bypass CORS)
+    const tryProxy = (): Promise<boolean> => {
       return new Promise((res) => {
-        if (typeof window === "undefined") return res(false);
-        const encoded = encodeURIComponent(text);
-        const url = `/api/tts?text=${encoded}&lang=${lang}`;
-        
+        const url = `/api/tts?text=${encodeURIComponent(text)}&lang=${lang}&v=${Date.now()}`;
+        console.log("TTS: Trying Proxy...");
         const audio = new Audio(url);
-        audio.playbackRate = 0.9;
         currentAudio = audio;
+        const t = setTimeout(() => { audio.pause(); res(false); }, 7000);
+        audio.onended = () => { clearTimeout(t); resolve(); res(true); };
+        audio.onerror = () => { clearTimeout(t); res(false); };
+        audio.play().catch(() => { clearTimeout(t); res(false); });
+      });
+    };
 
-        const timeout = setTimeout(() => {
-          audio.pause();
-          res(false);
-        }, 8000);
+    // Strategy 2: Google Direct (gtx)
+    const tryDirect = (domain = "com"): Promise<boolean> => {
+      return new Promise((res) => {
+        const url = `https://translate.google.${domain}/translate_tts?ie=UTF-8&q=${encodeURIComponent(text)}&tl=${lang}&client=gtx`;
+        console.log(`TTS: Trying Direct (.${domain})...`);
+        const audio = new Audio(url);
+        currentAudio = audio;
+        const t = setTimeout(() => { audio.pause(); res(false); }, 7000);
+        audio.onended = () => { clearTimeout(t); resolve(); res(true); };
+        audio.onerror = () => { clearTimeout(t); res(false); };
+        audio.play().catch(() => { clearTimeout(t); res(false); });
+      });
+    };
 
-        audio.onended = () => {
-          clearTimeout(timeout);
-          currentAudio = null;
-          resolve();
-          res(true);
-        };
-
-        audio.onerror = () => {
-          clearTimeout(timeout);
-          currentAudio = null;
-          res(false);
-        };
-
-        audio.play().catch((err) => {
-          if (err.name !== "AbortError") {
-            console.warn("Google TTS Error:", err);
-          }
-          clearTimeout(timeout);
-          res(false);
+    // Strategy 3: ResponsiveVoice
+    const tryRV = (retries = 3): Promise<boolean> => {
+      return new Promise((res) => {
+        const rv = (window as any).responsiveVoice;
+        if (!rv) {
+          if (retries > 0) {
+            console.log("TTS: Waiting for RV...");
+            setTimeout(() => res(tryRV(retries - 1)), 1500);
+          } else res(false);
+          return;
+        }
+        console.log("TTS: Trying RV...");
+        rv.speak(text, "Khmer Male", {
+          onend: () => { resolve(); res(true); },
+          onerror: () => res(false)
         });
       });
     };
 
-    // Strategy 2: Web Speech API (SpeechSynthesis)
-    const tryWebSpeech = (): Promise<boolean> => {
+    // Strategy 4: Web Speech
+    const tryWeb = (): Promise<boolean> => {
       return new Promise((res) => {
-        if (typeof window === "undefined" || !("speechSynthesis" in window)) {
-          return res(false);
-        }
-
-        const speak = () => {
-          const utterance = new SpeechSynthesisUtterance(text);
-          utterance.lang = "km-KH"; // Default Khmer
-          utterance.rate = 0.8;
-          utterance.pitch = 1.0;
-          utterance.volume = 1.0;
-
-          // Find the best Khmer voice
-          const voices = window.speechSynthesis.getVoices();
-          const khmerVoice = voices.find(v => 
-            v.lang.includes("km") || v.lang.includes("khm") || v.name.toLowerCase().includes("khmer")
-          );
-          
-          if (khmerVoice) {
-            utterance.voice = khmerVoice;
-            utterance.lang = khmerVoice.lang;
-          }
-
-          utterance.onend = () => { resolve(); res(true); };
-          utterance.onerror = () => res(false);
-
-          window.speechSynthesis.speak(utterance);
-        };
-
-        if (window.speechSynthesis.getVoices().length > 0) {
-          speak();
-        } else {
-          window.speechSynthesis.onvoiceschanged = speak;
-          // Fallback if event never fires
-          setTimeout(speak, 100);
-        }
+        if (typeof window === "undefined" || !window.speechSynthesis) return res(false);
+        const ut = new SpeechSynthesisUtterance(text);
+        ut.lang = "km-KH";
+        const v = window.speechSynthesis.getVoices().find(v => v.lang.includes("km"));
+        if (v) ut.voice = v;
+        ut.onend = () => { resolve(); res(true); };
+        ut.onerror = () => res(false);
+        console.log("TTS: Trying Web Speech...");
+        window.speechSynthesis.speak(ut);
       });
     };
 
-    // Execute strategies
     (async () => {
-      try {
-        const googleOk = await tryGoogleTTS();
-        if (!googleOk) {
-          await tryWebSpeech();
-        }
-      } catch (err) {
-        console.error("TTS Error:", err);
-        resolve(); // Always resolve to avoid hanging
-      }
+      if (await tryProxy()) return;
+      if (await tryDirect("com")) return;
+      if (await tryDirect("com.vn")) return;
+      if (await tryRV()) return;
+      if (await tryWeb()) return;
+      console.error("TTS Failed");
+      resolve();
     })();
   });
 }

@@ -1,6 +1,4 @@
-"use client";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { Link, useLocation } from "react-router-dom";
 import { useStore } from "@/store/useStore";
 import { cn } from "@/lib/utils";
 import { BookOpen, Home, Trophy, User, Zap, BarChart2, Library, Heart } from "lucide-react";
@@ -15,14 +13,15 @@ const navItems = [
 ];
 
 export function Sidebar() {
-  const pathname = usePathname();
+  const location = useLocation();
+  const pathname = location.pathname;
   const { user, hearts, theme, toggleTheme } = useStore();
 
   return (
     <aside className="sidebar fixed left-0 top-0 h-full w-64 border-r-2 flex flex-col py-6 px-4 z-50"
       style={{ background: "var(--card)", borderColor: "var(--border)" }}>
       {/* Logo */}
-      <Link href="/learn" className="flex items-center gap-3 px-3 mb-8">
+      <Link to="/learn" className="flex items-center gap-3 px-3 mb-8">
         <div className="w-10 h-10 rounded-2xl flex items-center justify-center text-2xl"
           style={{ background: "var(--green)" }}>🇰🇭</div>
         <span className="text-xl font-black" style={{ color: "var(--green)" }}>KhmerLearn</span>
@@ -33,7 +32,7 @@ export function Sidebar() {
         {navItems.map(({ href, icon: Icon, label }) => {
           const active = pathname === href || pathname.startsWith(href + "/");
           return (
-            <Link key={href} href={href}
+            <Link key={href} to={href}
               className={cn("nav-item flex-row text-base", active && "active")}
               style={active ? { background: "rgba(88,204,2,0.1)" } : {}}>
               <Icon size={22} />
@@ -93,7 +92,8 @@ export function Sidebar() {
 }
 
 export function BottomNav() {
-  const pathname = usePathname();
+  const location = useLocation();
+  const pathname = location.pathname;
   // Show all 6 items on bottom nav
   const bottomItems = navItems;
 
@@ -102,7 +102,7 @@ export function BottomNav() {
       {bottomItems.map(({ href, icon: Icon, label }) => {
         const active = pathname === href || pathname.startsWith(href + "/");
         return (
-          <Link key={href} href={href}
+          <Link key={href} to={href}
             className={cn("nav-item scale-90 sm:scale-100", active && "active")}>
             <Icon size={20} />
             <span className="text-[10px] sm:text-xs font-bold">{label}</span>

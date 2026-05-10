@@ -1,7 +1,6 @@
-"use client";
 import { motion } from "framer-motion";
 import { useStore } from "@/store/useStore";
-import { useRouter } from "next/navigation";
+import { useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 import { Sidebar, BottomNav } from "@/components/Navigation";
 import { ACHIEVEMENTS } from "@/lib/data";
@@ -11,10 +10,10 @@ import toast from "react-hot-toast";
 
 export default function ProfilePage() {
   const { user, isAuthenticated, hearts, completedLessons, logout, theme } = useStore();
-  const router = useRouter();
+  const navigate = useNavigate();
 
   useEffect(() => {
-    if (!isAuthenticated) router.replace("/");
+    if (!isAuthenticated) navigate("/", { replace: true });
   }, [isAuthenticated]);
 
   if (!user) return null;
@@ -29,7 +28,7 @@ export default function ProfilePage() {
       await signOut(auth);
       logout();
       toast.success("Đã đăng xuất!");
-      router.push("/");
+      navigate("/");
     } catch (e) {
       toast.error("Lỗi đăng xuất!");
     }

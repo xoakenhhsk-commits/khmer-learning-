@@ -1,13 +1,12 @@
-"use client";
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Upload, FileText, Database, Plus, LogOut, Loader2, Book, FileSpreadsheet } from "lucide-react";
 import toast from "react-hot-toast";
-import { useStore } from "@/store/useStore"; // Ensure we have a way to add vocab to store
+import { useStore } from "@/store/useStore"; 
 
 export default function AdminDashboard() {
-  const router = useRouter();
+  const navigate = useNavigate();
   const [image, setImage] = useState<string | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const [ocrResults, setOcrResults] = useState<any[]>([]);
@@ -26,7 +25,7 @@ export default function AdminDashboard() {
     // Simple protection
     const isAuth = sessionStorage.getItem("admin_auth");
     if (isAuth !== "true") {
-      router.replace("/admin");
+      navigate("/admin", { replace: true });
     } else {
       fetchData();
     }
@@ -119,6 +118,7 @@ export default function AdminDashboard() {
       const parsedResults: any[] = [];
       
       for (const line of lines) {
+        // Handle grammar (usually Title = Content)
         if (line.includes('=')) {
           const parts = line.split('=');
           parsedResults.push({
@@ -126,17 +126,38 @@ export default function AdminDashboard() {
             title: parts[0].trim(),
             content: parts[1] ? parts[1].trim() : ""
           });
-        } else {
-          const parts = line.split('-');
-          const khmerWord = parts[0].trim();
-          if (khmerWord) {
-            parsedResults.push({
-              type: "vocab",
-              khmerWord: khmerWord,
-              meaningVi: parts[1] ? parts[1].trim() : "Chưa có nghĩa",
-              phoneticVi: khmerWord.replace(/ /g, "-") // Mock
-            });
+          continue;
+        }
+
+        // Handle vocabulary (Khmer - Meaning - Phonetic or variations)
+        // Look for common separators: -, :, –, —, or double space
+        let separator = '-';
+        if (line.includes(':')) separator = ':';
+        else if (line.includes('–')) separator = '–';
+        else if (line.includes('—')) separator = '—';
+        else if (line.includes('  ')) separator = '  ';
+
+        const parts = line.split(separator);
+        const khmerWord = parts[0]?.trim();
+        
+        if (khmerWord && khmerWord.length > 0) {
+          // Attempt to extract meaning and phonetic
+          let meaning = "Chưa có nghĩa";
+          let phonetic = khmerWord.replace(/ /g, "-"); // Default mock
+
+          if (parts.length > 1) {
+            meaning = parts[1].trim();
           }
+          if (parts.length > 2) {
+            phonetic = parts[2].trim();
+          }
+
+          parsedResults.push({
+            type: "vocab",
+            khmerWord,
+            meaningVi: meaning,
+            phoneticVi: phonetic
+          });
         }
       }
 
@@ -183,7 +204,7 @@ export default function AdminDashboard() {
 
   const logout = () => {
     sessionStorage.removeItem("admin_auth");
-    router.push("/admin");
+    navigate("/admin");
   };
 
   return (

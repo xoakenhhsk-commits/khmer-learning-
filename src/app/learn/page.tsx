@@ -1,20 +1,18 @@
-"use client";
 import { motion } from "framer-motion";
 import { useStore } from "@/store/useStore";
-import { useRouter } from "next/navigation";
+import { useNavigate, Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { Sidebar, BottomNav } from "@/components/Navigation";
 import { LESSONS, CATEGORIES } from "@/lib/data";
 import { getLevelFromXP, getProgressPercent, formatXP } from "@/lib/utils";
-import Link from "next/link";
 import { Lock, CheckCircle, Star, Zap, Flame, Heart } from "lucide-react";
 
 export default function LearnPage() {
   const { user, isAuthenticated, hearts, completedLessons } = useStore();
-  const router = useRouter();
+  const navigate = useNavigate();
 
   useEffect(() => {
-    if (!isAuthenticated) router.replace("/");
+    if (!isAuthenticated) navigate("/", { replace: true });
   }, [isAuthenticated]);
 
   if (!user) return null;
@@ -59,19 +57,19 @@ export default function LearnPage() {
         <div className="p-6 max-w-3xl mx-auto">
           {/* Welcome */}
           <motion.div initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }}
-            className="mb-8 p-6 rounded-3xl text-white"
+            className="mb-6 sm:mb-8 p-4 sm:p-6 rounded-2xl sm:rounded-3xl text-white"
             style={{ background: "linear-gradient(135deg, #58CC02 0%, #1CB0F6 100%)" }}>
-            <p className="text-white/80 text-sm mb-1">Chào mừng trở lại,</p>
-            <h1 className="text-2xl font-black mb-3">{user.name} 👋</h1>
-            <div className="flex items-center gap-4">
-              <div className="flex items-center gap-2 bg-white/20 rounded-2xl px-4 py-2">
-                <Star size={16} /> <span className="font-bold">Lv.{level}</span>
+            <p className="text-white/80 text-xs sm:text-sm mb-1">Chào mừng trở lại,</p>
+            <h1 className="text-xl sm:text-2xl font-black mb-3">{user.name} 👋</h1>
+            <div className="flex flex-wrap items-center gap-2 sm:gap-4">
+              <div className="flex items-center gap-1.5 sm:gap-2 bg-white/20 rounded-xl sm:rounded-2xl px-3 sm:px-4 py-1.5 sm:py-2">
+                <Star size={14} /> <span className="font-bold text-xs sm:text-sm">Lv.{level}</span>
               </div>
-              <div className="flex items-center gap-2 bg-white/20 rounded-2xl px-4 py-2">
-                <Flame size={16} /> <span className="font-bold">{user.streakDays} ngày</span>
+              <div className="flex items-center gap-1.5 sm:gap-2 bg-white/20 rounded-xl sm:rounded-2xl px-3 sm:px-4 py-1.5 sm:py-2">
+                <Flame size={14} /> <span className="font-bold text-xs sm:text-sm">{user.streakDays} ngày</span>
               </div>
-              <div className="flex items-center gap-2 bg-white/20 rounded-2xl px-4 py-2">
-                <Zap size={16} /> <span className="font-bold">{formatXP(user.xp)} XP</span>
+              <div className="flex items-center gap-1.5 sm:gap-2 bg-white/20 rounded-xl sm:rounded-2xl px-3 sm:px-4 py-1.5 sm:py-2">
+                <Zap size={14} /> <span className="font-bold text-xs sm:text-sm">{formatXP(user.xp)} XP</span>
               </div>
             </div>
           </motion.div>
@@ -100,7 +98,7 @@ export default function LearnPage() {
                 <motion.div key={lesson.id}
                   initial={{ x: -20, opacity: 0 }} animate={{ x: 0, opacity: 1 }}
                   transition={{ delay: i * 0.1 }}>
-                  <Link href={isUnlocked ? `/lessons/${lesson.id}` : "#"}
+                  <Link to={isUnlocked ? `/lessons/${lesson.id}` : "#"}
                     className={`card flex items-center gap-4 relative overflow-hidden ${!isUnlocked ? "opacity-70 cursor-not-allowed" : "hover:scale-[1.01] transition-transform"}`}>
                     {/* Level badge */}
                     <div className="w-16 h-16 rounded-2xl flex items-center justify-center text-3xl flex-shrink-0"

@@ -74,7 +74,7 @@ export function Flashcard({ vocab, onNext, onPrev, current = 1, total = 1 }: Fla
       </div>
 
       {/* Card Container */}
-      <div className="w-full relative h-[400px]">
+      <div className="w-full relative h-[320px] sm:h-[400px]">
         <AnimatePresence mode="wait">
           <motion.div
             key={vocab.id}
@@ -91,18 +91,19 @@ export function Flashcard({ vocab, onNext, onPrev, current = 1, total = 1 }: Fla
               <div className="flashcard-inner w-full h-full">
                 {/* Front */}
                 <div
-                  className="flashcard-front w-full h-full flex flex-col items-center justify-center p-8 card overflow-hidden"
+                  className="flashcard-front w-full h-full flex flex-col items-center justify-center p-6 sm:p-8 card overflow-hidden"
                   style={{ background: "linear-gradient(135deg, #58CC02 0%, #4CAF00 100%)", border: "none" }}
                 >
                   <motion.p
-                    className="khmer-text text-6xl font-bold text-white text-center mb-4"
+                    className="khmer-text text-4xl sm:text-6xl font-bold text-white text-center mb-3 sm:mb-4 cursor-pointer hover:scale-105 transition-transform"
                     initial={{ scale: 0.8 }}
                     animate={{ scale: 1 }}
                     transition={{ type: "spring", stiffness: 200 }}
+                    onClick={handleSpeak}
                   >
                     {vocab.khmerWord}
                   </motion.p>
-                  <p className="text-white/90 text-xl font-medium mb-6 bg-black/10 px-4 py-1 rounded-full">
+                  <p className="text-white/90 text-lg sm:text-xl font-medium mb-4 sm:mb-6 bg-black/10 px-4 py-1 rounded-full">
                     {vocab.phoneticVi}
                   </p>
 
@@ -138,9 +139,9 @@ export function Flashcard({ vocab, onNext, onPrev, current = 1, total = 1 }: Fla
                 </div>
 
                 {/* Back */}
-                <div className="flashcard-back w-full h-full flex flex-col items-center justify-center p-8 card">
-                  <div className="text-6xl mb-4 drop-shadow-sm">🇻🇳</div>
-                  <h3 className="text-4xl font-black mb-2 text-center" style={{ color: "var(--text)" }}>
+                <div className="flashcard-back w-full h-full flex flex-col items-center justify-center p-6 sm:p-8 card">
+                  <div className="text-5xl sm:text-6xl mb-3 sm:mb-4 drop-shadow-sm">🇻🇳</div>
+                  <h3 className="text-3xl sm:text-4xl font-black mb-2 text-center" style={{ color: "var(--text)" }}>
                     {vocab.meaningVi}
                   </h3>
                   {vocab.meaningEn && (
@@ -164,7 +165,15 @@ export function Flashcard({ vocab, onNext, onPrev, current = 1, total = 1 }: Fla
                   {vocab.exampleVi && (
                     <div className="w-full p-5 rounded-2xl border-2 border-dashed" style={{ background: "var(--bg-secondary)", borderColor: "var(--border)" }}>
                       <p className="text-xs font-black mb-2 tracking-wider" style={{ color: "var(--green)" }}>VÍ DỤ</p>
-                      <p className="khmer-text text-base font-bold mb-1 leading-relaxed">{vocab.exampleKh}</p>
+                      <p 
+                        className="khmer-text text-base font-bold mb-1 leading-relaxed cursor-pointer hover:text-green-600 transition-colors"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          playTTS(vocab.exampleKh);
+                        }}
+                      >
+                        {vocab.exampleKh}
+                      </p>
                       <p className="text-sm italic" style={{ color: "var(--text-muted)" }}>{vocab.exampleVi}</p>
                     </div>
                   )}
@@ -180,29 +189,29 @@ export function Flashcard({ vocab, onNext, onPrev, current = 1, total = 1 }: Fla
       </div>
 
       {/* Controls */}
-      <div className="flex items-center gap-4 w-full">
+      <div className="flex items-center gap-3 sm:gap-4 w-full">
         <button
           onClick={handlePrev} disabled={current <= 1 || isPlaying}
-          className="w-16 h-16 flex items-center justify-center rounded-2xl border-b-4 transition-all disabled:opacity-30 active:border-b-0 active:translate-y-1"
+          className="w-14 h-14 sm:w-16 sm:h-16 flex items-center justify-center rounded-2xl border-b-4 transition-all disabled:opacity-30 active:border-b-0 active:translate-y-1"
           style={{ borderColor: "var(--border)", background: "var(--card)", borderBottomColor: "#ccc" }}
         >
-          <ChevronLeft size={28} />
+          <ChevronLeft size={24} />
         </button>
 
         <button
           onClick={() => { setFlipped(false); handleSpeak(); }}
-          className="flex-1 flex items-center justify-center gap-2 h-16 rounded-2xl border-b-4 font-black transition-all hover:brightness-95 active:border-b-0 active:translate-y-1"
+          className="flex-1 flex items-center justify-center gap-2 h-14 sm:h-16 rounded-2xl border-b-4 font-black text-sm sm:text-base transition-all hover:brightness-95 active:border-b-0 active:translate-y-1"
           style={{ borderColor: "var(--border)", background: "var(--card)", borderBottomColor: "#ccc" }}
         >
-          <RotateCcw size={20} /> NGHE LẠI
+          <RotateCcw size={18} /> NGHE LẠI
         </button>
 
         <button
           onClick={handleNext} disabled={current >= total || isPlaying}
-          className="w-16 h-16 flex items-center justify-center rounded-2xl border-b-4 transition-all disabled:opacity-30 active:border-b-0 active:translate-y-1"
+          className="w-14 h-14 sm:w-16 sm:h-16 flex items-center justify-center rounded-2xl border-b-4 transition-all disabled:opacity-30 active:border-b-0 active:translate-y-1"
           style={{ borderColor: "var(--border)", background: "var(--card)", borderBottomColor: "#ccc" }}
         >
-          <ChevronRight size={28} />
+          <ChevronRight size={24} />
         </button>
       </div>
 

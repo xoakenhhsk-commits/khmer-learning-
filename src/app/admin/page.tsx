@@ -1,22 +1,19 @@
-"use client";
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Lock, ArrowRight, ShieldCheck } from "lucide-react";
 import toast from "react-hot-toast";
 
 export default function AdminLoginPage() {
   const [password, setPassword] = useState("");
-  const router = useRouter();
+  const navigate = useNavigate();
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
     if (password === "chauvadut@2010") {
       toast.success("Đăng nhập Admin thành công!");
-      // Simple client-side auth for demo purposes. 
-      // In production, use session/JWT cookies.
       sessionStorage.setItem("admin_auth", "true");
-      router.push("/admin/dashboard");
+      navigate("/admin/dashboard");
     } else {
       toast.error("Mật khẩu không chính xác!");
     }

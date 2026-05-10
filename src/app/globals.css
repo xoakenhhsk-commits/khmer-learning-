@@ -365,26 +365,200 @@
   right: 0;
   background: var(--card);
   border-top: 2px solid var(--border);
-  padding: 8px 0 env(safe-area-inset-bottom, 8px);
+  padding: 6px 0 env(safe-area-inset-bottom, 6px);
   z-index: 100;
   display: none;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
 }
 
+/* ============================================= */
+/* RESPONSIVE: MOBILE-FIRST DESIGN               */
+/* ============================================= */
+
+/* --- Small phones (< 380px) --- */
+@media (max-width: 380px) {
+  .btn-primary, .btn-secondary {
+    padding: 12px 16px;
+    font-size: 0.8rem;
+    border-radius: 14px;
+  }
+
+  .card {
+    padding: 14px;
+    border-radius: 16px;
+  }
+
+  .badge {
+    padding: 3px 8px;
+    font-size: 0.65rem;
+  }
+
+  .quiz-option {
+    padding: 12px 14px;
+    border-radius: 14px;
+    font-size: 0.85rem;
+  }
+
+  .xp-bar {
+    height: 14px;
+  }
+
+  .nav-item {
+    padding: 6px 8px;
+    font-size: 0.55rem;
+  }
+}
+
+/* --- All phones (< 768px) --- */
 @media (max-width: 768px) {
-  .bottom-nav { 
-    display: flex; 
-    padding-bottom: calc(8px + env(safe-area-inset-bottom));
+  .bottom-nav {
+    display: flex;
+    padding-bottom: calc(6px + env(safe-area-inset-bottom));
   }
-  .sidebar { display: none !important; }
-  .main-content { 
-    padding-bottom: 90px !important; 
-    padding-left: 0 !important;
-    padding-right: 0 !important;
+
+  .sidebar {
+    display: none !important;
   }
-  
-  /* Optimize font sizes for mobile */
-  h1 { font-size: 1.875rem !important; }
-  .khmer-text { font-size: 1.1em; }
+
+  .main-content {
+    margin-left: 0 !important;
+    padding-bottom: 80px !important;
+  }
+
+  /* Typography adjustments */
+  h1 {
+    font-size: 1.75rem !important;
+    line-height: 1.2 !important;
+  }
+
+  h2 {
+    font-size: 1.375rem !important;
+  }
+
+  h3 {
+    font-size: 1.1rem !important;
+  }
+
+  .khmer-text {
+    font-size: 1em;
+    line-height: 1.6;
+  }
+
+  /* Cards: reduce padding & shadow on mobile */
+  .card {
+    padding: 16px;
+    border-radius: 18px;
+    box-shadow: 0 2px 0 rgba(0,0,0,0.08);
+  }
+
+  .card:hover {
+    transform: none;
+    box-shadow: 0 2px 0 rgba(0,0,0,0.08);
+  }
+
+  /* Buttons: touch-friendly sizing (min 44px height) */
+  .btn-primary, .btn-secondary, .btn-danger {
+    padding: 13px 24px;
+    font-size: 0.875rem;
+    border-radius: 14px;
+    min-height: 48px;
+    width: 100%;
+  }
+
+  /* Quiz options: bigger touch targets */
+  .quiz-option {
+    padding: 14px 16px;
+    border-radius: 14px;
+    min-height: 52px;
+  }
+
+  .quiz-option:hover {
+    transform: none;
+  }
+
+  /* Flashcard tweaks */
+  .flashcard {
+    border-radius: 20px;
+  }
+
+  .flashcard-front, .flashcard-back {
+    border-radius: 20px;
+  }
+
+  /* XP bar: slightly thinner */
+  .xp-bar {
+    height: 16px;
+  }
+
+  /* Badge */
+  .badge {
+    font-size: 0.7rem;
+    padding: 3px 10px;
+  }
+
+  /* Nav items: compact for bottom bar */
+  .nav-item {
+    padding: 6px 10px;
+    font-size: 0.6rem;
+    gap: 2px;
+  }
+
+  /* Input fields: touch-friendly */
+  input[type="text"],
+  input[type="email"],
+  input[type="password"],
+  input[type="search"],
+  select,
+  textarea {
+    font-size: 16px !important; /* Prevents iOS zoom on focus */
+    min-height: 48px;
+  }
+
+  /* Page padding */
+  .p-6 {
+    padding: 16px !important;
+  }
+
+  /* Prevent hover effects on touch */
+  @media (hover: none) {
+    .card:hover {
+      transform: none;
+      box-shadow: var(--shadow);
+    }
+    .quiz-option:hover {
+      border-color: var(--border);
+      background: var(--card);
+      transform: none;
+    }
+  }
+}
+
+/* --- Tablets (768px - 1024px) --- */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .sidebar {
+    width: 220px !important;
+  }
+
+  .main-content {
+    margin-left: 220px !important;
+  }
+
+  .card {
+    padding: 18px;
+  }
+
+  .nav-item {
+    font-size: 0.65rem;
+    padding: 8px 12px;
+  }
+}
+
+/* --- Large desktop (> 1400px) --- */
+@media (min-width: 1400px) {
+  .main-content {
+    max-width: 1200px;
+  }
 }
 
 /* Responsive grid */
@@ -395,7 +569,7 @@
 }
 
 @media (max-width: 640px) {
-  .lessons-grid { grid-template-columns: 1fr; }
+  .lessons-grid { grid-template-columns: 1fr; gap: 12px; }
 }
 
 /* Glassmorphism */
@@ -409,4 +583,81 @@
 .dark .glass {
   background: rgba(0, 0, 0, 0.2);
   border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* Safe area padding for notch devices (iPhone X+) */
+@supports (padding-top: env(safe-area-inset-top)) {
+  .sticky {
+    padding-top: env(safe-area-inset-top);
+  }
+
+  .bottom-nav {
+    padding-bottom: calc(6px + env(safe-area-inset-bottom));
+  }
+
+  body {
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right);
+  }
+}
+
+/* Touch-specific: prevent text selection on interactive elements */
+button, a, .card, .quiz-option, .nav-item, .flashcard {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+/* Smooth scrolling for all scrollable containers */
+.overflow-y-auto, .overflow-x-auto {
+  -webkit-overflow-scrolling: touch;
+  scroll-behavior: smooth;
+}
+
+/* Pull-to-refresh prevention */
+html {
+  overscroll-behavior-y: contain;
+}
+
+/* Active state for touch devices (instant feedback) */
+@media (hover: none) and (pointer: coarse) {
+  .btn-primary:active {
+    transform: scale(0.97);
+    opacity: 0.9;
+  }
+
+  .btn-secondary:active {
+    transform: scale(0.97);
+    opacity: 0.9;
+  }
+
+  .card:active {
+    transform: scale(0.98);
+    opacity: 0.95;
+  }
+
+  .quiz-option:active {
+    transform: scale(0.98);
+    background: rgba(28, 176, 246, 0.08);
+  }
+
+  .nav-item:active {
+    transform: scale(0.9);
+  }
+}
+
+/* Landscape phone adjustments */
+@media (max-height: 500px) and (orientation: landscape) {
+  .bottom-nav {
+    padding: 4px 0;
+  }
+
+  .nav-item {
+    padding: 4px 12px;
+    font-size: 0.55rem;
+  }
+
+  .flashcard {
+    max-height: 280px;
+  }
 }
