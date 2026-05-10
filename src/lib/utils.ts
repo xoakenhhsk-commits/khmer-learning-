@@ -62,61 +62,51 @@ export function playTTS(text: string, lang = "km"): Promise<void> {
       window.speechSynthesis.cancel();
     }
 
-    // Strategy 1: Google Proxy (Bypass CORS)
+    // Strategy 1: Server Proxy (works on both Vite dev & Vercel production)
     const tryProxy = (): Promise<boolean> => {
       return new Promise((res) => {
         const url = `/api/tts?text=${encodeURIComponent(text)}&lang=${lang}&v=${Date.now()}`;
         console.log("TTS: Trying Proxy...");
         const audio = new Audio(url);
         currentAudio = audio;
-        const t = setTimeout(() => { audio.pause(); res(false); }, 7000);
-        audio.onended = () => { clearTimeout(t); resolve(); res(true); };
-        audio.onerror = () => { clearTimeout(t); res(false); };
-        audio.play().catch(() => { clearTimeout(t); res(false); });
+        const t = setTimeout(() => { audio.pause(); res(false); }, 8000);
+        audio.onended = () => { clearTimeout(t); currentAudio = null; resolve(); res(true); };
+        audio.onerror = () => { clearTimeout(t); currentAudio = null; res(false); };
+        audio.play().then(() => {
+          console.log("TTS: Proxy playing ✓");
+        }).catch(() => { clearTimeout(t); res(false); });
       });
     };
 
-    // Strategy 2: Google Direct (gtx)
-    const tryDirect = (domain = "com"): Promise<boolean> => {
-      return new Promise((res) => {
-        const url = `https://translate.google.${domain}/translate_tts?ie=UTF-8&q=${encodeURIComponent(text)}&tl=${lang}&client=gtx`;
-        console.log(`TTS: Trying Direct (.${domain})...`);
-        const audio = new Audio(url);
-        currentAudio = audio;
-        const t = setTimeout(() => { audio.pause(); res(false); }, 7000);
-        audio.onended = () => { clearTimeout(t); resolve(); res(true); };
-        audio.onerror = () => { clearTimeout(t); res(false); };
-        audio.play().catch(() => { clearTimeout(t); res(false); });
-      });
-    };
-
-    // Strategy 3: ResponsiveVoice
-    const tryRV = (retries = 3): Promise<boolean> => {
+    // Strategy 2: ResponsiveVoice (loaded via script in index.html)
+    const tryRV = (retries = 5): Promise<boolean> => {
       return new Promise((res) => {
         const rv = (window as any).responsiveVoice;
         if (!rv) {
           if (retries > 0) {
-            console.log("TTS: Waiting for RV...");
-            setTimeout(() => res(tryRV(retries - 1)), 1500);
+            setTimeout(() => res(tryRV(retries - 1)), 800);
           } else res(false);
           return;
         }
-        console.log("TTS: Trying RV...");
+        console.log("TTS: Trying ResponsiveVoice...");
+        const timeout = setTimeout(() => res(false), 8000);
         rv.speak(text, "Khmer Male", {
-          onend: () => { resolve(); res(true); },
-          onerror: () => res(false)
+          onend: () => { clearTimeout(timeout); resolve(); res(true); },
+          onerror: () => { clearTimeout(timeout); res(false); }
         });
       });
     };
 
-    // Strategy 4: Web Speech
+    // Strategy 3: Web Speech API (native browser fallback)
     const tryWeb = (): Promise<boolean> => {
       return new Promise((res) => {
         if (typeof window === "undefined" || !window.speechSynthesis) return res(false);
         const ut = new SpeechSynthesisUtterance(text);
         ut.lang = "km-KH";
-        const v = window.speechSynthesis.getVoices().find(v => v.lang.includes("km"));
-        if (v) ut.voice = v;
+        ut.rate = 0.9;
+        const voices = window.speechSynthesis.getVoices();
+        const v = voices.find(v => v.lang.includes("km") || v.name.toLowerCase().includes("khmer"));
+        if (v) { ut.voice = v; ut.lang = v.lang; }
         ut.onend = () => { resolve(); res(true); };
         ut.onerror = () => res(false);
         console.log("TTS: Trying Web Speech...");
@@ -125,13 +115,25 @@ export function playTTS(text: string, lang = "km"): Promise<void> {
     };
 
     (async () => {
-      if (await tryProxy()) return;
-      if (await tryDirect("com")) return;
-      if (await tryDirect("com.vn")) return;
-      if (await tryRV()) return;
-      if (await tryWeb()) return;
-      console.error("TTS Failed");
-      resolve();
+      try {
+        // 1. Proxy (server-side, bypasses CORS - works on Vercel + localhost)
+        console.log(`TTS: Requesting "/api/tts" for: "${text}"`);
+        if (await tryProxy()) return;
+        
+        // 2. ResponsiveVoice (client-side JS library)
+        console.log("TTS: Proxy failed, trying ResponsiveVoice...");
+        if (await tryRV()) return;
+        
+        // 3. Web Speech (native browser)
+        console.log("TTS: ResponsiveVoice failed, trying Web Speech...");
+        if (await tryWeb()) return;
+        
+        console.error("TTS: All strategies failed for:", text);
+      } catch (err) {
+        console.error("TTS: Critical error in playTTS:", err);
+      } finally {
+        resolve();
+      }
     })();
   });
 }
