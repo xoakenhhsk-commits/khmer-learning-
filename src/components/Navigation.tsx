@@ -99,14 +99,14 @@ export function BottomNav() {
   const bottomItems = navItems;
 
   return (
-    <nav className="bottom-nav justify-around items-center px-2">
+    <nav className="bottom-nav justify-around items-center px-1">
       {bottomItems.map(({ href, icon: Icon, label }) => {
         const active = pathname === href || pathname.startsWith(href + "/");
         return (
           <Link key={href} to={href}
-            className={cn("nav-item scale-90 sm:scale-100", active && "active")}>
-            <Icon size={20} />
-            <span className="text-[10px] sm:text-xs font-bold">{label}</span>
+            className={cn("nav-item scale-90 sm:scale-100 flex-1 min-w-0 px-1", active && "active")}>
+            <Icon size={18} />
+            <span className="text-[9px] sm:text-xs font-bold truncate w-full text-center">{label}</span>
           </Link>
         );
       })}

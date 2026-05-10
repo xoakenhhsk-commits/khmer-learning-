@@ -46,7 +46,13 @@
     color: var(--text);
     font-family: var(--font-inter), system-ui, sans-serif;
     min-height: 100vh;
+    min-height: -webkit-fill-available; /* Fix for older Safari */
     transition: background-color 0.3s ease, color 0.3s ease;
+    overflow-x: hidden;
+  }
+
+  html {
+    height: -webkit-fill-available;
   }
 
   ::-webkit-scrollbar { width: 6px; height: 6px; }
@@ -58,7 +64,8 @@
 /* Khmer font support */
 .khmer-text {
   font-family: var(--font-khmer), 'Khmer OS', 'Khmer', system-ui, sans-serif;
-  line-height: 1.8;
+  line-height: 1.85; /* Increased for iOS subscripts */
+  padding-bottom: 0.1em; /* Extra space for subscripts */
 }
 
 /* Duolingo-style buttons */
@@ -238,7 +245,7 @@
   position: absolute;
   width: 100%;
   backface-visibility: hidden;
-  -webkit-backface-visibility: hidden;
+  -webkit-backface-visibility: hidden; /* Fix for older WebKit/iOS */
   border-radius: 24px;
 }
 
@@ -415,6 +422,15 @@
   .bottom-nav {
     display: flex;
     padding-bottom: calc(6px + env(safe-area-inset-bottom));
+    /* Prevent shrinking on narrow screens */
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  
+  .bottom-nav::-webkit-scrollbar {
+    display: none;
   }
 
   .sidebar {
@@ -599,6 +615,17 @@
     padding-left: env(safe-area-inset-left);
     padding-right: env(safe-area-inset-right);
   }
+  
+  /* Height fixes for fixed elements on Safari */
+  .min-h-screen {
+    min-height: 100vh;
+    min-height: calc(var(--vh, 1vh) * 100);
+  }
+  
+  .h-screen {
+    height: 100vh;
+    height: calc(var(--vh, 1vh) * 100);
+  }
 }
 
 /* Touch-specific: prevent text selection on interactive elements */
@@ -610,7 +637,7 @@ button, a, .card, .quiz-option, .nav-item, .flashcard {
 
 /* Smooth scrolling for all scrollable containers */
 .overflow-y-auto, .overflow-x-auto {
-  -webkit-overflow-scrolling: touch;
+  -webkit-overflow-scrolling: touch; /* Native feel on iOS */
   scroll-behavior: smooth;
 }
 
