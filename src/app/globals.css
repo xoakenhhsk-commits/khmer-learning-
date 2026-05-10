@@ -441,6 +441,19 @@
     margin-left: 0 !important;
     padding-bottom: 80px !important;
   }
+}
+
+/* Sidebar transition logic for desktop */
+@media (min-width: 769px) {
+  .sidebar {
+    width: var(--sidebar-width, 256px);
+  }
+  
+  .main-content {
+    margin-left: var(--sidebar-width, 256px) !important;
+    transition: margin-left 0.3s ease;
+  }
+}
 
   /* Typography adjustments */
   h1 {
