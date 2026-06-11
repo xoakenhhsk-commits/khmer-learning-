@@ -1,0 +1,231 @@
+// This is your Prisma schema file
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  name          String?
+  password      String?
+  avatar        String?
+  googleId      String?   @unique
+  role          Role      @default(USER)
+  xp            Int       @default(0)
+  level         Int       @default(1)
+  streakDays    Int       @default(0)
+  lastStudyDate DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  progress     Progress[]
+  achievements UserAchievement[]
+  quizResults  QuizResult[]
+  streaks      Streak[]
+
+  @@map("users")
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+model Category {
+  id          String   @id @default(cuid())
+  name        String
+  nameKh      String
+  description String?
+  icon        String?
+  color       String   @default("#58CC02")
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+
+  lessons Lesson[]
+
+  @@map("categories")
+}
+
+model Lesson {
+  id          String      @id @default(cuid())
+  title       String
+  titleKh     String
+  description String?
+  level       Int         @default(1)
+  xpReward    Int         @default(10)
+  order       Int         @default(0)
+  isLocked    Boolean     @default(true)
+  imageUrl    String?
+  categoryId  String
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  category   Category     @relation(fields: [categoryId], references: [id])
+  vocabulary Vocabulary[]
+  quizzes    Quiz[]
+  progress   Progress[]
+
+  @@map("lessons")
+}
+
+model Vocabulary {
+  id            String   @id @default(cuid())
+  khmerWord     String
+  phoneticVi    String
+  meaningVi     String
+  meaningEn     String?
+  exampleKh     String?
+  exampleVi     String?
+  audioUrl      String?
+  imageUrl      String?
+  difficulty    Int      @default(1)
+  lessonId      String
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  lesson    Lesson      @relation(fields: [lessonId], references: [id])
+  quizItems QuizItem[]
+
+  @@map("vocabulary")
+}
+
+model Quiz {
+  id        String     @id @default(cuid())
+  lessonId  String
+  type      QuizType
+  question  String
+  audioUrl  String?
+  imageUrl  String?
+  xpReward  Int        @default(5)
+  createdAt DateTime   @default(now())
+
+  lesson  Lesson     @relation(fields: [lessonId], references: [id])
+  items   QuizItem[]
+  results QuizResult[]
+
+  @@map("quizzes")
+}
+
+enum QuizType {
+  MULTIPLE_CHOICE
+  FILL_BLANK
+  MATCHING
+  LISTENING
+  DRAG_DROP
+  TRUE_FALSE
+}
+
+model QuizItem {
+  id           String  @id @default(cuid())
+  quizId       String
+  vocabularyId String?
+  text         String
+  textKh       String?
+  isCorrect    Boolean @default(false)
+  order        Int     @default(0)
+
+  quiz       Quiz        @relation(fields: [quizId], references: [id])
+  vocabulary Vocabulary? @relation(fields: [vocabularyId], references: [id])
+
+  @@map("quiz_items")
+}
+
+model Progress {
+  id          String   @id @default(cuid())
+  userId      String
+  lessonId    String
+  completed   Boolean  @default(false)
+  score       Int      @default(0)
+  xpEarned    Int      @default(0)
+  completedAt DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  user   User   @relation(fields: [userId], references: [id])
+  lesson Lesson @relation(fields: [lessonId], references: [id])
+
+  @@unique([userId, lessonId])
+  @@map("progress")
+}
+
+model Achievement {
+  id          String   @id @default(cuid())
+  name        String
+  nameVi      String
+  description String
+  icon        String
+  xpReward    Int      @default(50)
+  requirement Int
+  type        AchievementType
+  createdAt   DateTime @default(now())
+
+  users UserAchievement[]
+
+  @@map("achievements")
+}
+
+enum AchievementType {
+  STREAK
+  XP
+  LESSONS_COMPLETED
+  VOCABULARY_LEARNED
+  QUIZ_PERFECT
+}
+
+model UserAchievement {
+  id            String   @id @default(cuid())
+  userId        String
+  achievementId String
+  earnedAt      DateTime @default(now())
+
+  user        User        @relation(fields: [userId], references: [id])
+  achievement Achievement @relation(fields: [achievementId], references: [id])
+
+  @@unique([userId, achievementId])
+  @@map("user_achievements")
+}
+
+model Streak {
+  id        String   @id @default(cuid())
+  userId    String
+  date      DateTime
+  xpEarned  Int      @default(0)
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@unique([userId, date])
+  @@map("streaks")
+}
+
+model QuizResult {
+  id        String   @id @default(cuid())
+  userId    String
+  quizId    String
+  score     Int
+  correct   Int
+  total     Int
+  xpEarned  Int      @default(0)
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id])
+  quiz Quiz @relation(fields: [quizId], references: [id])
+
+  @@map("quiz_results")
+}
+
+model AudioFile {
+  id        String   @id @default(cuid())
+  filename  String
+  url       String
+  text      String?
+  language  String   @default("km")
+  createdAt DateTime @default(now())
+
+  @@map("audio_files")
+}
