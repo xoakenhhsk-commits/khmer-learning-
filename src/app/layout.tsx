@@ -13,14 +13,14 @@ const khmerFont = Kantumruy_Pro({
 
 
 export const metadata: Metadata = {
-  title: "KhmerLearn – Học Tiếng Khmer Miễn Phí",
+  title: "KH Learn – Học Tiếng Khmer Miễn Phí",
   description: "Học tiếng Khmer dễ dàng và vui vẻ với phương pháp Duolingo. Từ vựng, bài học, mini game và theo dõi tiến độ.",
-  keywords: ["học tiếng Khmer", "Khmer learning", "language app", "duolingo khmer"],
-  authors: [{ name: "KhmerLearn Team" }],
+  keywords: ["học tiếng Khmer", "Khmer learning", "KH Learn", "language app", "duolingo khmer"],
+  authors: [{ name: "KH Learn Team" }],
   manifest: "/manifest.json",
-  appleWebApp: { capable: true, statusBarStyle: "default", title: "KhmerLearn" },
+  appleWebApp: { capable: true, statusBarStyle: "default", title: "KH Learn" },
   openGraph: {
-    title: "KhmerLearn – Học Tiếng Khmer",
+    title: "KH Learn – Học Tiếng Khmer",
     description: "Ứng dụng học tiếng Khmer miễn phí theo phong cách Duolingo",
     type: "website",
   },

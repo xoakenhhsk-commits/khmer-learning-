@@ -39,7 +39,7 @@ export default function LeaderboardPage() {
                <Trophy size={64} strokeWidth={2.5} />
              </motion.div>
              <h1 className="text-4xl font-black mb-3 tracking-tight">Bảng Xếp Hạng</h1>
-             <p className="text-lg font-medium" style={{ color: "var(--text-muted)" }}>Học tập cùng cộng đồng KhmerLearn! 🇰🇭</p>
+             <p className="text-lg font-medium" style={{ color: "var(--text-muted)" }}>Học tập cùng cộng đồng KH Learn! 🇰🇭</p>
           </div>
 
           <div className="space-y-3 pb-20">

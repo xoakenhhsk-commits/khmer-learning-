@@ -433,7 +433,7 @@ export default function AdminDashboard() {
           <div className="bg-blue-600 text-white p-2 rounded-lg">
             <Database size={24} />
           </div>
-          <h1 className="text-xl font-black">KhmerLearn Admin</h1>
+          <h1 className="text-xl font-black">KH Learn Admin</h1>
         </div>
         <button onClick={logout} className="flex items-center gap-2 text-red-500 font-bold hover:bg-red-50 px-4 py-2 rounded-lg transition-colors">
           <LogOut size={18} /> Đăng xuất

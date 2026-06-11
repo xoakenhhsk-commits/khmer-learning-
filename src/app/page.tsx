@@ -38,8 +38,18 @@ export default function HomePage() {
       {/* Header */}
       <header className="flex items-center justify-between px-6 py-4 max-w-6xl mx-auto relative z-10">
         <div className="flex items-center gap-2">
-          <span className="text-3xl">🇰🇭</span>
-          <span className="text-xl font-black" style={{ color: "var(--green)" }}>KhmerLearn</span>
+          <div className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0 shadow-md"
+            style={{ background: "linear-gradient(135deg, #0F1B3C 0%, #1a3a6b 50%, #10B981 100%)" }}>
+            <svg width="22" height="22" viewBox="0 0 26 26" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M13 20C13 20 5 16.5 5 9V6C5 6 9 4.5 13 7C17 4.5 21 6 21 6V9C21 16.5 13 20 13 20Z" fill="#F5C842" fillOpacity="0.15" stroke="#F5C842" strokeWidth="1.2" strokeLinejoin="round"/>
+              <line x1="13" y1="7" x2="13" y2="20" stroke="#F5C842" strokeWidth="1.2" strokeDasharray="2 1"/>
+              <circle cx="8.5" cy="11" r="1" fill="#ffffff" fillOpacity="0.9"/>
+              <circle cx="17.5" cy="11" r="1" fill="#ffffff" fillOpacity="0.9"/>
+              <circle cx="13" cy="4" r="0.8" fill="#F5C842"/>
+              <text x="9" y="17" fontSize="5" fontWeight="bold" fill="#ffffff" fontFamily="Arial">KH</text>
+            </svg>
+          </div>
+          <span className="text-xl font-black" style={{ background: "linear-gradient(135deg, #10B981, #F5C842)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text" }}>KH Learn</span>
         </div>
         <div className="flex items-center gap-3">
           <Link to="/login" className="btn-secondary py-2 px-5 text-sm">Đăng nhập</Link>
@@ -146,7 +156,7 @@ export default function HomePage() {
       {/* Footer */}
       <footer className="text-center py-8 sm:py-12 text-sm relative z-10" style={{ color: "var(--text-muted)", borderTop: "2px solid var(--border)" }}>
         <div className="max-w-6xl mx-auto px-4 sm:px-6 flex flex-col md:flex-row justify-between items-center gap-3 sm:gap-4">
-          <p className="font-bold text-xs sm:text-sm">© 2026 KhmerLearn — Học tiếng Khmer miễn phí 🇰🇭</p>
+          <p className="font-bold text-xs sm:text-sm">© 2026 KH Learn — Học tiếng Khmer miễn phí 🇰🇭</p>
           <div className="flex gap-4 sm:gap-6 font-bold text-[10px] sm:text-xs uppercase tracking-widest">
             <a href="#" className="hover:text-green-500">Về chúng tôi</a>
             <a href="#" className="hover:text-green-500">Điều khoản</a>

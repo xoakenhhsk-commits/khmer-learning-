@@ -1,16 +1,21 @@
 {
-  "name": "KhmerLearn",
-  "short_name": "KhmerLearn",
+  "name": "KH Learn",
+  "short_name": "KH Learn",
   "description": "Ứng dụng học tiếng Khmer miễn phí theo phong cách Duolingo",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#ffffff",
-  "theme_color": "#58CC02",
+  "background_color": "#0F1B3C",
+  "theme_color": "#10B981",
   "icons": [
     {
-      "src": "/favicon.ico",
+      "src": "/kh-learn-logo.png",
       "sizes": "192x192",
-      "type": "image/x-icon"
+      "type": "image/png"
+    },
+    {
+      "src": "/kh-learn-logo.png",
+      "sizes": "512x512",
+      "type": "image/png"
     }
   ]
 }
