@@ -2,20 +2,22 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Sidebar } from "@/components/Navigation";
 import { useStore } from "@/store/useStore";
-import { khmerConsonants, KhmerConsonant } from "@/data/alphabet";
+import { khmerConsonants, khmerVowels, KhmerConsonant, KhmerVowel } from "@/data/alphabet";
 import { playTTS, shuffleArray, cn } from "@/lib/utils";
-import { Volume2, BookOpen, BrainCircuit, ArrowLeft, Trophy, CheckCircle2, XCircle } from "lucide-react";
+import { Volume2, BookOpen, BrainCircuit, ArrowLeft, Trophy, CheckCircle2, XCircle, Type } from "lucide-react";
 
 type Mode = "learn" | "quiz" | "result";
+type Tab = "consonants" | "vowels";
 
 export default function AlphabetPage() {
   const [mode, setMode] = useState<Mode>("learn");
-  const [selectedChar, setSelectedChar] = useState<KhmerConsonant | null>(null);
+  const [tab, setTab] = useState<Tab>("consonants");
+  const [selectedChar, setSelectedChar] = useState<KhmerConsonant | KhmerVowel | null>(null);
   
   // Quiz State
-  const [quizQuestions, setQuizQuestions] = useState<KhmerConsonant[]>([]);
+  const [quizQuestions, setQuizQuestions] = useState<(KhmerConsonant | KhmerVowel)[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [options, setOptions] = useState<KhmerConsonant[]>([]);
+  const [options, setOptions] = useState<(KhmerConsonant | KhmerVowel)[]>([]);
   const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
   const [isCorrect, setIsCorrect] = useState<boolean | null>(null);
   const [score, setScore] = useState(0);
@@ -24,7 +26,8 @@ export default function AlphabetPage() {
 
   // Initialize Quiz
   const startQuiz = () => {
-    const shuffled = shuffleArray(khmerConsonants).slice(0, 10); // 10 questions per quiz
+    const dataSource = tab === "consonants" ? khmerConsonants : khmerVowels;
+    const shuffled = shuffleArray(dataSource).slice(0, 10); // 10 questions per quiz
     setQuizQuestions(shuffled);
     setCurrentIndex(0);
     setScore(0);
@@ -32,8 +35,9 @@ export default function AlphabetPage() {
     generateOptions(shuffled[0]);
   };
 
-  const generateOptions = (correctChar: KhmerConsonant) => {
-    const others = khmerConsonants.filter(c => c.id !== correctChar.id);
+  const generateOptions = (correctChar: KhmerConsonant | KhmerVowel) => {
+    const dataSource = tab === "consonants" ? khmerConsonants : khmerVowels;
+    const others = dataSource.filter(c => c.id !== correctChar.id);
     const wrongOptions = shuffleArray(others).slice(0, 3);
     setOptions(shuffleArray([correctChar, ...wrongOptions]));
     setSelectedAnswer(null);
@@ -69,6 +73,10 @@ export default function AlphabetPage() {
     addXP(score * 5);
   };
 
+  const isConsonant = (char: KhmerConsonant | KhmerVowel): char is KhmerConsonant => {
+    return (char as KhmerConsonant).series !== undefined;
+  };
+
   return (
     <div className="min-h-screen pb-24 md:pb-0">
       <Sidebar />
@@ -77,64 +85,100 @@ export default function AlphabetPage() {
           <div>
             <h1 className="text-2xl sm:text-3xl font-black mb-2" style={{ color: "var(--text)" }}>Bảng chữ cái Khmer</h1>
             <p className="text-sm font-bold" style={{ color: "var(--text-muted)" }}>
-              Học 33 phụ âm cơ bản và luyện tập trí nhớ
+              Học 33 phụ âm và 25 nguyên âm cơ bản
             </p>
           </div>
           
-          {mode === "learn" && (
-            <button onClick={startQuiz} className="btn-primary w-full sm:w-auto">
-              <BrainCircuit size={20} /> BẮT ĐẦU LUYỆN TẬP
-            </button>
-          )}
-          {mode !== "learn" && (
-            <button onClick={() => setMode("learn")} className="btn-secondary w-full sm:w-auto">
-              <ArrowLeft size={20} /> QUAY LẠI HỌC
-            </button>
-          )}
+          <div className="flex gap-2 w-full sm:w-auto">
+            {mode === "learn" && (
+              <button onClick={startQuiz} className="btn-primary flex-1 sm:flex-none">
+                <BrainCircuit size={20} /> LUYỆN TẬP
+              </button>
+            )}
+            {mode !== "learn" && (
+              <button onClick={() => setMode("learn")} className="btn-secondary flex-1 sm:flex-none">
+                <ArrowLeft size={20} /> QUAY LẠI
+              </button>
+            )}
+          </div>
         </div>
+
+        {/* TAB SWITCHER */}
+        {mode === "learn" && (
+          <div className="flex p-1 bg-gray-100 dark:bg-gray-800 rounded-2xl mb-8 w-fit">
+            <button
+              onClick={() => setTab("consonants")}
+              className={cn(
+                "px-6 py-2 rounded-xl font-bold transition-all",
+                tab === "consonants" ? "bg-white dark:bg-gray-700 shadow-sm" : "opacity-50"
+              )}
+            >
+              Phụ âm (33)
+            </button>
+            <button
+              onClick={() => setTab("vowels")}
+              className={cn(
+                "px-6 py-2 rounded-xl font-bold transition-all",
+                tab === "vowels" ? "bg-white dark:bg-gray-700 shadow-sm" : "opacity-50"
+              )}
+            >
+              Nguyên âm (25)
+            </button>
+          </div>
+        )}
 
         {/* LEARN MODE */}
         {mode === "learn" && (
           <div className="space-y-8 animate-fade-in">
-            {/* Legend */}
-            <div className="flex gap-4 justify-center flex-wrap">
-              <div className="flex items-center gap-2">
-                <div className="w-4 h-4 rounded-full bg-green-500"></div>
-                <span className="text-sm font-bold">Âm "A" (Giọng thanh)</span>
+            {/* Legend for Consonants */}
+            {tab === "consonants" && (
+              <div className="flex gap-4 justify-center flex-wrap">
+                <div className="flex items-center gap-2">
+                  <div className="w-4 h-4 rounded-full bg-green-500"></div>
+                  <span className="text-sm font-bold">Âm "A" (Giọng thanh)</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="w-4 h-4 rounded-full bg-blue-500"></div>
+                  <span className="text-sm font-bold">Âm "O" (Giọng trầm)</span>
+                </div>
               </div>
-              <div className="flex items-center gap-2">
-                <div className="w-4 h-4 rounded-full bg-blue-500"></div>
-                <span className="text-sm font-bold">Âm "O" (Giọng trầm)</span>
-              </div>
-            </div>
+            )}
 
             {/* Alphabet Grid */}
             <div className="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-6 lg:grid-cols-8 gap-3 sm:gap-4">
-              {khmerConsonants.map((item) => (
-                <motion.button
-                  key={item.id}
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  onClick={() => {
-                    setSelectedChar(item);
-                    playTTS(item.char);
-                  }}
-                  className={cn(
-                    "flex flex-col items-center justify-center p-3 rounded-2xl border-b-4 transition-all hover:brightness-110 aspect-square",
-                    item.series === "A" ? "bg-green-50 border-green-200 text-green-700" : "bg-blue-50 border-blue-200 text-blue-700"
-                  )}
-                  style={{ 
-                    background: item.series === "A" ? "rgba(88,204,2,0.1)" : "rgba(28,176,246,0.1)",
-                    borderColor: item.series === "A" ? "rgba(88,204,2,0.3)" : "rgba(28,176,246,0.3)",
-                  }}
-                >
-                  <span className="khmer-text text-3xl sm:text-4xl font-bold mb-1">{item.char}</span>
-                  <span className="text-xs sm:text-sm font-bold opacity-80">{item.phonetic}</span>
-                </motion.button>
-              ))}
+              {(tab === "consonants" ? khmerConsonants : khmerVowels).map((item) => {
+                const isCons = isConsonant(item);
+                return (
+                  <motion.button
+                    key={item.id}
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    onClick={() => {
+                      setSelectedChar(item);
+                      playTTS(item.char.replace("◌", "ក")); // Play with a base consonant for vowels
+                    }}
+                    className={cn(
+                      "flex flex-col items-center justify-center p-3 rounded-2xl border-b-4 transition-all hover:brightness-110 aspect-square",
+                      !isCons ? "bg-purple-50 border-purple-200 text-purple-700" :
+                      item.series === "A" ? "bg-green-50 border-green-200 text-green-700" : "bg-blue-50 border-blue-200 text-blue-700"
+                    )}
+                    style={{ 
+                      background: !isCons ? "rgba(168,85,247,0.1)" : 
+                                 item.series === "A" ? "rgba(88,204,2,0.1)" : "rgba(28,176,246,0.1)",
+                      borderColor: !isCons ? "rgba(168,85,247,0.3)" :
+                                  item.series === "A" ? "rgba(88,204,2,0.3)" : "rgba(28,176,246,0.3)",
+                    }}
+                  >
+                    <span className="khmer-text text-3xl sm:text-4xl font-bold mb-1">{item.char}</span>
+                    <span className="text-xs sm:text-sm font-bold opacity-80">
+                      {isCons ? item.phonetic : item.phoneticA}
+                    </span>
+                  </motion.button>
+                );
+              })}
             </div>
 
-            {/* Selected Character Detail (Popup/Modal style) */}
+            {/* Selected Character Detail */}
             <AnimatePresence>
               {selectedChar && (
                 <motion.div
@@ -145,7 +189,7 @@ export default function AlphabetPage() {
                   onClick={() => setSelectedChar(null)}
                 >
                   <div 
-                    className="w-full sm:w-[400px] bg-white dark:bg-gray-800 rounded-t-3xl sm:rounded-3xl p-6 sm:p-8 shadow-2xl border border-gray-200 dark:border-gray-700 relative"
+                    className="w-full sm:w-[450px] bg-white dark:bg-gray-800 rounded-t-3xl sm:rounded-3xl p-6 sm:p-8 shadow-2xl border border-gray-200 dark:border-gray-700 relative"
                     onClick={e => e.stopPropagation()}
                   >
                     <button 
@@ -156,29 +200,53 @@ export default function AlphabetPage() {
                     </button>
                     
                     <div className="flex flex-col items-center">
-                      <div className={cn(
-                        "w-32 h-32 rounded-3xl flex items-center justify-center mb-6 shadow-inner",
-                        selectedChar.series === "A" ? "bg-green-100 text-green-600" : "bg-blue-100 text-blue-600"
-                      )}>
-                        <span className="khmer-text text-7xl font-bold">{selectedChar.char}</span>
-                      </div>
-                      
-                      <h2 className="text-3xl font-black mb-1">{selectedChar.phonetic}</h2>
-                      <p className="text-gray-500 font-bold mb-6">Nhóm âm "{selectedChar.series}"</p>
-                      
-                      <div className="grid grid-cols-2 gap-4 w-full mb-6">
-                        <div className="bg-gray-50 dark:bg-gray-900 p-4 rounded-2xl flex flex-col items-center">
-                          <span className="text-xs font-bold text-gray-400 mb-1 uppercase">Ký tự chân</span>
-                          <span className="khmer-text text-3xl font-bold">{selectedChar.subscript}</span>
-                        </div>
-                        <div className="bg-gray-50 dark:bg-gray-900 p-4 rounded-2xl flex flex-col items-center">
-                          <span className="text-xs font-bold text-gray-400 mb-1 uppercase">Ví dụ</span>
-                          <span className="text-base font-bold text-center h-full flex items-center">{selectedChar.meaning}</span>
-                        </div>
-                      </div>
+                      {isConsonant(selectedChar) ? (
+                        <>
+                          <div className={cn(
+                            "w-32 h-32 rounded-3xl flex items-center justify-center mb-6 shadow-inner",
+                            selectedChar.series === "A" ? "bg-green-100 text-green-600" : "bg-blue-100 text-blue-600"
+                          )}>
+                            <span className="khmer-text text-7xl font-bold">{selectedChar.char}</span>
+                          </div>
+                          
+                          <h2 className="text-3xl font-black mb-1">{selectedChar.phonetic}</h2>
+                          <p className="text-gray-500 font-bold mb-6">Nhóm âm "{selectedChar.series}"</p>
+                          
+                          <div className="grid grid-cols-2 gap-4 w-full mb-6">
+                            <div className="bg-gray-50 dark:bg-gray-900 p-4 rounded-2xl flex flex-col items-center">
+                              <span className="text-xs font-bold text-gray-400 mb-1 uppercase">Ký tự chân</span>
+                              <span className="khmer-text text-3xl font-bold">{selectedChar.subscript}</span>
+                            </div>
+                            <div className="bg-gray-50 dark:bg-gray-900 p-4 rounded-2xl flex flex-col items-center">
+                              <span className="text-xs font-bold text-gray-400 mb-1 uppercase">Ví dụ</span>
+                              <span className="text-base font-bold text-center h-full flex items-center">{selectedChar.meaning}</span>
+                            </div>
+                          </div>
+                        </>
+                      ) : (
+                        <>
+                          <div className="w-32 h-32 rounded-3xl bg-purple-100 text-purple-600 flex items-center justify-center mb-6 shadow-inner">
+                            <span className="khmer-text text-7xl font-bold">{selectedChar.char}</span>
+                          </div>
+                          
+                          <h2 className="text-3xl font-black mb-1">{selectedChar.name}</h2>
+                          <p className="text-gray-500 font-bold mb-6">Nguyên âm không độc lập</p>
+                          
+                          <div className="grid grid-cols-2 gap-4 w-full mb-6">
+                            <div className="bg-gray-50 dark:bg-gray-900 p-4 rounded-2xl flex flex-col items-center border-b-4 border-green-500">
+                              <span className="text-xs font-bold text-gray-400 mb-1 uppercase">Với âm A</span>
+                              <span className="text-2xl font-black text-green-600">{selectedChar.phoneticA}</span>
+                            </div>
+                            <div className="bg-gray-50 dark:bg-gray-900 p-4 rounded-2xl flex flex-col items-center border-b-4 border-blue-500">
+                              <span className="text-xs font-bold text-gray-400 mb-1 uppercase">Với âm O</span>
+                              <span className="text-2xl font-black text-blue-600">{selectedChar.phoneticO}</span>
+                            </div>
+                          </div>
+                        </>
+                      )}
                       
                       <button 
-                        onClick={() => playTTS(selectedChar.char)}
+                        onClick={() => playTTS(selectedChar.char.replace("◌", "ក"))}
                         className="btn-primary w-full"
                       >
                         <Volume2 size={20} /> NGHE LẠI
@@ -202,11 +270,18 @@ export default function AlphabetPage() {
             </div>
 
             <div className="card p-8 sm:p-12 text-center mb-8 relative overflow-hidden">
-              <p className="text-sm font-bold text-gray-400 uppercase tracking-widest mb-4">Chữ nào có phiên âm là</p>
-              <h2 className="text-5xl sm:text-6xl font-black text-blue-500">{quizQuestions[currentIndex].phonetic}</h2>
+              <p className="text-sm font-bold text-gray-400 uppercase tracking-widest mb-4">
+                {isConsonant(quizQuestions[currentIndex]) ? "Chữ nào có phiên âm là" : "Nguyên âm nào có âm thanh"}
+              </p>
+              <h2 className="text-5xl sm:text-6xl font-black text-blue-500">
+                {isConsonant(quizQuestions[currentIndex]) 
+                  ? (quizQuestions[currentIndex] as KhmerConsonant).phonetic 
+                  : (quizQuestions[currentIndex] as KhmerVowel).phoneticA + " / " + (quizQuestions[currentIndex] as KhmerVowel).phoneticO
+                }
+              </h2>
               
               <button 
-                onClick={() => playTTS(quizQuestions[currentIndex].char)}
+                onClick={() => playTTS(quizQuestions[currentIndex].char.replace("◌", "ក"))}
                 className="mt-6 mx-auto w-12 h-12 flex items-center justify-center rounded-full bg-blue-100 text-blue-500 hover:bg-blue-200 transition-colors"
               >
                 <Volume2 size={24} />

@@ -7,6 +7,14 @@ export interface KhmerConsonant {
   meaning: string;
 }
 
+export interface KhmerVowel {
+  id: string;
+  char: string;
+  name: string;
+  phoneticA: string;
+  phoneticO: string;
+}
+
 export const khmerConsonants: KhmerConsonant[] = [
   // Nhóm 1 (K)
   { id: "c1", char: "ក", subscript: "្ក", phonetic: "kâ", series: "A", meaning: "Cái cổ" },
@@ -47,4 +55,32 @@ export const khmerConsonants: KhmerConsonant[] = [
   { id: "c31", char: "ហ", subscript: "្ហ", phonetic: "hâ", series: "A", meaning: "Cái kèn" },
   { id: "c32", char: "ឡ", subscript: "្ឡ", phonetic: "lâ", series: "A", meaning: "Ngọn đuốc (không có chân)" },
   { id: "c33", char: "អ", subscript: "្អ", phonetic: "â", series: "A", meaning: "Con bò" }
+];
+
+export const khmerVowels: KhmerVowel[] = [
+  { id: "v1", char: "◌", name: "Inherent", phoneticA: "â", phoneticO: "ô" },
+  { id: "v2", char: "◌ា", name: "Srak A", phoneticA: "aa", phoneticO: "éav" },
+  { id: "v3", char: "◌ិ", name: "Srak E", phoneticA: "ĕ", phoneticO: "ĭ" },
+  { id: "v4", char: "◌ី", name: "Srak Ei", phoneticA: "ei", phoneticO: "ī" },
+  { id: "v5", char: "◌ึ", name: "Srak Oe", phoneticA: "œ̆", phoneticO: "ŭœ" },
+  { id: "v6", char: "◌ឺ", name: "Srak Oeu", phoneticA: "œ", phoneticO: "ư̄" },
+  { id: "v7", char: "◌ុ", name: "Srak O", phoneticA: "ŏ", phoneticO: "ŭ" },
+  { id: "v8", char: "◌ូ", name: "Srak Oo", phoneticA: "o", phoneticO: "u" },
+  { id: "v9", char: "◌ួ", name: "Srak Ua", phoneticA: "uŏ", phoneticO: "uŏ" },
+  { id: "v10", char: "ើ", name: "Srak Oeu", phoneticA: "aeu", phoneticO: "eu" },
+  { id: "v11", char: "ឿ", name: "Srak Oea", phoneticA: "uœa", phoneticO: "uœa" },
+  { id: "v12", char: "ៀ", name: "Srak Ie", phoneticA: "iĕa", phoneticO: "iĕa" },
+  { id: "v13", char: "េ", name: "Srak E", phoneticA: "é", phoneticO: "ê" },
+  { id: "v14", char: "ែ", name: "Srak Ae", phoneticA: "ê", phoneticO: "ê" },
+  { id: "v15", char: "ៃ", name: "Srak Ay", phoneticA: "ay", phoneticO: "ey" },
+  { id: "v16", char: "ោ", name: "Srak Ao", phoneticA: "ao", phoneticO: "ô" },
+  { id: "v17", char: "ៅ", name: "Srak Au", phoneticA: "au", phoneticO: "ŏv" },
+  { id: "v18", char: "ុំ", name: "Srak Om", phoneticA: "om", phoneticO: "um" },
+  { id: "v19", char: "ំ", name: "Srak Am", phoneticA: "âm", phoneticO: "um" },
+  { id: "v20", char: "ាំ", name: "Srak Am", phoneticA: "ăm", phoneticO: "oâm" },
+  { id: "v21", char: "ះ", name: "Srak Ah", phoneticA: "ăh", phoneticO: "eăh" },
+  { id: "v22", char: "ុះ", name: "Srak Oh", phoneticA: "ŏh", phoneticO: "ŭh" },
+  { id: "v23", char: "េះ", name: "Srak Eh", phoneticA: "éh", phoneticO: "ĭh" },
+  { id: "v24", char: "ោះ", name: "Srak Oh", phoneticA: "ŏah", phoneticO: "uŏh" },
+  { id: "v25", char: "ៈ", name: "Srak Ak", phoneticA: "ăʔ", phoneticO: "eăʔ" }
 ];
