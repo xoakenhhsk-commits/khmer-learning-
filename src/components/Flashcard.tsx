@@ -59,6 +59,23 @@ export function Flashcard({ vocab, onNext, onPrev, current = 1, total = 1 }: Fla
     onPrev?.();
   };
 
+  // Keyboard navigation
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "ArrowRight") {
+        if (current < total) handleNext();
+      } else if (e.key === "ArrowLeft") {
+        if (current > 1) handlePrev();
+      } else if (e.key === " " || e.key === "Enter") {
+        e.preventDefault();
+        setFlipped(f => !f);
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [current, total, isPlaying]);
+
   const progressPct = (current / total) * 100;
 
   return (
