@@ -433,10 +433,6 @@
     display: none;
   }
 
-  .sidebar {
-    display: none !important;
-  }
-
   .main-content {
     margin-left: 0 !important;
   }
