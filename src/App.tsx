@@ -9,6 +9,7 @@ import VocabularyPage from './app/vocabulary/page';
 import LeaderboardPage from './app/leaderboard/page';
 import StatsPage from './app/stats/page';
 import ProfilePage from './app/profile/page';
+import AlphabetPage from './app/alphabet/page';
 import LessonsPage from './app/lessons/page';
 import LessonPage from './app/lessons/[id]/page';
 import StoriesPage from './app/stories/page';
@@ -35,6 +36,7 @@ function App() {
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/learn" element={<LearnPage />} />
         <Route path="/vocabulary" element={<VocabularyPage />} />
+        <Route path="/alphabet" element={<AlphabetPage />} />
         <Route path="/leaderboard" element={<LeaderboardPage />} />
         <Route path="/stats" element={<StatsPage />} />
         <Route path="/profile" element={<ProfilePage />} />

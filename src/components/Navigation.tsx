@@ -2,11 +2,12 @@ import { Link, useLocation } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { useStore } from "@/store/useStore";
 import { cn } from "@/lib/utils";
-import { BookOpen, Home, Trophy, User, Zap, BarChart2, Library, Heart, Menu, ChevronLeft } from "lucide-react";
+import { BookOpen, Home, Trophy, User, Zap, BarChart2, Library, Heart, Menu, ChevronLeft, Type } from "lucide-react";
 
 const navItems = [
   { href: "/learn", icon: Home, label: "Trang chủ" },
   { href: "/lessons", icon: BookOpen, label: "Bài học" },
+  { href: "/alphabet", icon: Type, label: "Chữ cái" },
   { href: "/stories", icon: BookOpen, label: "Truyện" },
   { href: "/vocabulary", icon: Library, label: "Từ điển" },
   { href: "/leaderboard", icon: Trophy, label: "Xếp hạng" },
