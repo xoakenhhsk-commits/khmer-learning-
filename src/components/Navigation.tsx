@@ -139,78 +139,27 @@ export function Sidebar() {
           </button>
         )}
       </aside>
-    </>
-  );
-}
 
-export function BottomNav() {
-  const location = useLocation();
-  const pathname = location.pathname;
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const { theme, toggleTheme } = useStore();
-
-  // Show only 4 items + Menu on bottom nav to prevent squishing
-  const bottomItems = navItems.slice(0, 4);
-
-  return (
-    <>
-      <nav className="bottom-nav justify-around items-center px-1 md:hidden">
-        {bottomItems.map(({ href, icon: Icon, label }) => {
-          const active = pathname === href || pathname.startsWith(href + "/");
-          return (
-            <Link key={href} to={href}
-              className={cn("nav-item scale-90 sm:scale-100 flex-1 min-w-0 px-1", active && "active")}>
-              <Icon size={20} />
-              <span className="text-[10px] sm:text-xs font-bold truncate w-full text-center mt-1">{label}</span>
-            </Link>
-          );
-        })}
+      {/* Mobile Top Header (Floating Hamburger) */}
+      <div className="md:hidden fixed top-3 left-4 z-[60]">
         <button 
-          onClick={() => setIsMobileMenuOpen(true)}
-          className="nav-item scale-90 sm:scale-100 flex-1 min-w-0 px-1 text-gray-500"
+          onClick={() => setIsCollapsed(false)}
+          className={cn(
+            "p-2 rounded-xl shadow-sm border transition-all flex items-center justify-center",
+            !isCollapsed && "opacity-0 pointer-events-none"
+          )}
+          style={{ background: "var(--card)", borderColor: "var(--border)", color: "var(--text)" }}
         >
-          <Menu size={20} />
-          <span className="text-[10px] sm:text-xs font-bold truncate w-full text-center mt-1">Menu</span>
+          <Menu size={24} />
         </button>
-      </nav>
-
-      {/* Mobile Menu Overlay */}
-      {isMobileMenuOpen && (
-        <div className="fixed inset-0 z-[100] flex flex-col bg-white dark:bg-[#131f24] animate-slide-up md:hidden">
-          <div className="flex items-center justify-between p-4 border-b dark:border-gray-800">
-            <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-xl flex items-center justify-center text-xl" style={{ background: "var(--green)" }}>🇰🇭</div>
-              <span className="text-xl font-black" style={{ color: "var(--green)" }}>KhmerLearn</span>
-            </div>
-            <button onClick={() => setIsMobileMenuOpen(false)} className="p-2 bg-gray-100 dark:bg-gray-800 rounded-full text-gray-500">
-              <ChevronLeft size={24} />
-            </button>
-          </div>
-          <div className="flex-1 overflow-y-auto p-4 space-y-2">
-            {navItems.map(({ href, icon: Icon, label }) => {
-              const active = pathname === href || pathname.startsWith(href + "/");
-              return (
-                <Link key={href} to={href}
-                  onClick={() => setIsMobileMenuOpen(false)}
-                  className={cn("flex items-center gap-4 p-4 rounded-2xl transition-all", 
-                    active ? "bg-green-50 dark:bg-green-900/20 text-green-500" : "text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800"
-                  )}
-                >
-                  <Icon size={24} />
-                  <span className="font-bold text-lg">{label}</span>
-                </Link>
-              );
-            })}
-          </div>
-          <div className="p-4 border-t dark:border-gray-800">
-            <button onClick={toggleTheme}
-              className="w-full py-4 rounded-2xl font-bold transition-all shadow-sm border border-gray-100 dark:border-gray-800 flex items-center justify-center gap-2"
-              style={{ background: "var(--card)", color: "var(--text-muted)" }}>
-              {theme === "light" ? "🌙 Giao diện tối" : "☀️ Giao diện sáng"}
-            </button>
-          </div>
-        </div>
-      )}
+      </div>
     </>
   );
 }
+
+// BottomNav is intentionally removed as all navigation is now handled via the Sidebar drawer.
+export function BottomNav() {
+  return null;
+}
+
+
