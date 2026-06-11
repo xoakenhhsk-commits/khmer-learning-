@@ -108,7 +108,7 @@ export function Flashcard({ vocab, onNext, onPrev, current = 1, total = 1 }: Fla
               <div className="flashcard-inner w-full h-full">
                 {/* Front */}
                 <div
-                  className="flashcard-front w-full h-full flex flex-col items-center justify-center p-6 sm:p-8 card overflow-hidden"
+                  className="flashcard-front w-full h-full flex flex-col items-center justify-center p-6 sm:p-8 card"
                   style={{ background: "linear-gradient(135deg, #58CC02 0%, #4CAF00 100%)", border: "none" }}
                 >
                   <motion.p
