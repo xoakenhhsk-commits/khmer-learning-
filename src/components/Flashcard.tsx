@@ -103,7 +103,7 @@ export function Flashcard({ vocab, onNext, onPrev, current = 1, total = 1 }: Fla
           >
             <div
               className={cn("flashcard w-full h-full", flipped && "flipped")}
-              onClick={() => setFlipped(!flipped)}
+              onClick={() => setFlipped(prev => !prev)}
             >
               <div className="flashcard-inner w-full h-full">
                 {/* Front */}
