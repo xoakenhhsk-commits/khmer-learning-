@@ -141,7 +141,10 @@ export function Sidebar() {
       </aside>
 
       {/* Mobile Top Header (Floating Hamburger) */}
-      <div className="md:hidden fixed top-3 left-4 z-[60]">
+      <div 
+        className="md:hidden fixed left-4 z-[60]"
+        style={{ top: "calc(env(safe-area-inset-top, 0px) + 0.75rem)" }}
+      >
         <button 
           onClick={() => setIsCollapsed(false)}
           className={cn(
