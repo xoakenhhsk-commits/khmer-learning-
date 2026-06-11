@@ -442,11 +442,6 @@
     padding-bottom: 80px !important;
   }
 
-  /* Make room for floating hamburger menu */
-  .main-content .sticky.top-0 {
-    padding-left: 64px !important;
-  }
-
   /* Typography adjustments */
   h1 {
     font-size: 1.75rem !important;

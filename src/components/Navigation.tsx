@@ -139,19 +139,6 @@ export function Sidebar() {
           </button>
         )}
       </aside>
-
-      {/* Mobile Top Header (Floating Hamburger) */}
-      <div className="md:hidden fixed top-3 left-4 z-[60]">
-        <button 
-          onClick={() => setIsCollapsed(false)}
-          className={cn(
-            "p-2 rounded-xl bg-white dark:bg-[#1a2e38] shadow-sm border text-gray-700 dark:text-gray-300 transition-all",
-            !isCollapsed && "opacity-0 pointer-events-none"
-          )}
-        >
-          <Menu size={24} />
-        </button>
-      </div>
     </>
   );
 }
