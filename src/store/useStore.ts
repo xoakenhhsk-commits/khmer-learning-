@@ -21,6 +21,7 @@ interface AppState {
   completedLessons: string[];
   dailyXP: number;
   theme: "light" | "dark";
+  deviceOS: "auto" | "ios" | "android" | "desktop";
 
   setUser: (user: User | null) => void;
   setAuthenticated: (val: boolean) => void;
@@ -30,6 +31,7 @@ interface AppState {
   setCurrentLesson: (id: string | null) => void;
   completeLesson: (id: string) => void;
   toggleTheme: () => void;
+  setDeviceOS: (os: "auto" | "ios" | "android" | "desktop") => void;
   logout: () => void;
 }
 
@@ -43,6 +45,7 @@ export const useStore = create<AppState>()(
       completedLessons: [],
       dailyXP: 0,
       theme: "light",
+      deviceOS: "auto",
 
       setUser: (user) => set({ user, isAuthenticated: !!user }),
       setAuthenticated: (val) => set({ isAuthenticated: val }),
@@ -66,6 +69,7 @@ export const useStore = create<AppState>()(
         set((state) => ({
           theme: state.theme === "light" ? "dark" : "light",
         })),
+      setDeviceOS: (os) => set({ deviceOS: os }),
       logout: () =>
         set({
           user: null,

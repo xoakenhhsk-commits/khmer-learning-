@@ -17,7 +17,7 @@ const navItems = [
 export function Sidebar() {
   const location = useLocation();
   const pathname = location.pathname;
-  const { user, hearts, theme, toggleTheme } = useStore();
+  const { user, hearts, theme, toggleTheme, deviceOS, setDeviceOS } = useStore();
   const [isCollapsed, setIsCollapsed] = useState(() => {
     // Default to true on mobile devices
     if (typeof window !== 'undefined' && window.innerWidth < 768) return true;
@@ -138,12 +138,38 @@ export function Sidebar() {
             {isCollapsed ? (theme === "light" ? "🌙" : "☀️") : (theme === "light" ? "🌙 Dark Mode" : "☀️ Light Mode")}
           </button>
         )}
+
+        {/* Device Switcher (Mobile & Debug) */}
+        {(!isCollapsed || window.innerWidth >= 768) && (
+          <button 
+            onClick={() => {
+              const nextOS = deviceOS === "ios" ? "android" : (deviceOS === "android" ? "desktop" : "ios");
+              setDeviceOS(nextOS);
+            }}
+            className={cn(
+              "mt-2 w-full py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all hover:scale-[1.02] active:scale-95 shadow-sm border border-gray-100 flex items-center justify-center gap-2",
+              isCollapsed ? "px-0" : "px-4"
+            )}
+            style={{ background: "var(--card)", color: "var(--text-muted)" }}>
+            {isCollapsed 
+              ? (deviceOS === "ios" ? "🍎" : (deviceOS === "android" ? "🤖" : "💻"))
+              : (
+                <>
+                  {deviceOS === "ios" ? "🍎 iPhone UI" : (deviceOS === "android" ? "🤖 Android UI" : "💻 Desktop UI")}
+                </>
+              )
+            }
+          </button>
+        )}
       </aside>
 
       {/* Mobile Top Header (Floating Hamburger) */}
       <div 
         className="md:hidden fixed left-4 z-[60]"
-        style={{ top: "calc(env(safe-area-inset-top, 0px) + 0.75rem)" }}
+        style={{ 
+          top: deviceOS === "ios" ? "calc(env(safe-area-inset-top, 47px) + 0.75rem)" 
+               : (deviceOS === "auto" ? "calc(env(safe-area-inset-top, 0px) + 0.75rem)" : "0.75rem") 
+        }}
       >
         <button 
           onClick={() => setIsCollapsed(false)}

@@ -613,30 +613,36 @@
 }
 
 /* Safe area padding for notch devices (iPhone X+) */
-@supports (padding-top: env(safe-area-inset-top)) {
-  .sticky {
-    padding-top: env(safe-area-inset-top);
-  }
+body.device-ios .sticky {
+  padding-top: env(safe-area-inset-top, 47px);
+}
 
-  .bottom-nav {
-    padding-bottom: calc(6px + env(safe-area-inset-bottom));
-  }
+body.device-ios .bottom-nav {
+  padding-bottom: calc(6px + env(safe-area-inset-bottom, 34px));
+}
 
-  body {
-    padding-left: env(safe-area-inset-left);
-    padding-right: env(safe-area-inset-right);
-  }
-  
-  /* Height fixes for fixed elements on Safari */
-  .min-h-screen {
-    min-height: 100vh;
-    min-height: calc(var(--vh, 1vh) * 100);
-  }
-  
-  .h-screen {
-    height: 100vh;
-    height: calc(var(--vh, 1vh) * 100);
-  }
+body.device-ios {
+  padding-left: env(safe-area-inset-left, 0px);
+  padding-right: env(safe-area-inset-right, 0px);
+}
+
+/* Height fixes for fixed elements on Safari */
+body.device-ios .min-h-screen {
+  min-height: 100vh;
+  min-height: calc(var(--vh, 1vh) * 100);
+}
+
+body.device-ios .h-screen {
+  height: 100vh;
+  height: calc(var(--vh, 1vh) * 100);
+}
+
+/* If device-auto, fallback to native safe-area-inset-top but usually deviceOS will take over after prompt */
+body.device-auto .sticky {
+  padding-top: env(safe-area-inset-top);
+}
+body.device-auto .bottom-nav {
+  padding-bottom: calc(6px + env(safe-area-inset-bottom));
 }
 
 /* Touch-specific: prevent text selection on interactive elements */

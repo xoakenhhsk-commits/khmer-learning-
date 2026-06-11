@@ -13,8 +13,20 @@ import LessonsPage from './app/lessons/page';
 import LessonPage from './app/lessons/[id]/page';
 import StoriesPage from './app/stories/page';
 import StoryDetailPage from './app/stories/[id]/page';
+import { DevicePrompt } from './components/DevicePrompt';
+import { useStore } from './store/useStore';
+import { useEffect } from 'react';
 
 function App() {
+  const deviceOS = useStore((state) => state.deviceOS);
+
+  useEffect(() => {
+    // Remove old classes
+    document.body.classList.remove('device-ios', 'device-android', 'device-desktop', 'device-auto');
+    // Add new class
+    document.body.classList.add(`device-${deviceOS}`);
+  }, [deviceOS]);
+
   return (
     <Router>
       <Routes>
@@ -34,6 +46,7 @@ function App() {
         <Route path="/admin/dashboard" element={<AdminDashboard />} />
         <Route path="*" element={<div>Page Not Found</div>} />
       </Routes>
+      <DevicePrompt />
     </Router>
   );
 }
