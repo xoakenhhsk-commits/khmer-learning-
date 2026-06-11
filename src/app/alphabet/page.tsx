@@ -5,7 +5,6 @@ import { useStore } from "@/store/useStore";
 import { khmerConsonants, KhmerConsonant } from "@/data/alphabet";
 import { playTTS, shuffleArray, cn } from "@/lib/utils";
 import { Volume2, BookOpen, BrainCircuit, ArrowLeft, Trophy, CheckCircle2, XCircle } from "lucide-react";
-import confetti from "canvas-confetti";
 
 type Mode = "learn" | "quiz" | "result";
 
@@ -68,9 +67,6 @@ export default function AlphabetPage() {
   const finishQuiz = () => {
     setMode("result");
     addXP(score * 5);
-    if (score >= 5) {
-      confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
-    }
   };
 
   return (
