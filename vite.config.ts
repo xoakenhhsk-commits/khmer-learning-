@@ -6,6 +6,7 @@ import fs from 'fs';
 
 // https://vitejs.dev/config/
 export default defineConfig({
+  base: '/khmer-learning-/',
   plugins: [
     react(),
     tailwindcss(),
