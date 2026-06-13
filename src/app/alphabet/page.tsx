@@ -160,18 +160,18 @@ export default function AlphabetPage() {
                     className={cn(
                       "flex flex-col items-center justify-center p-3 rounded-2xl border-b-4 transition-all hover:brightness-110 aspect-square",
                       !isCons ? "bg-purple-50 border-purple-200 text-purple-700" :
-                      item.series === "A" ? "bg-green-50 border-green-200 text-green-700" : "bg-blue-50 border-blue-200 text-blue-700"
+                      (item as KhmerConsonant).series === "A" ? "bg-green-50 border-green-200 text-green-700" : "bg-blue-50 border-blue-200 text-blue-700"
                     )}
                     style={{ 
                       background: !isCons ? "rgba(168,85,247,0.1)" : 
-                                 item.series === "A" ? "rgba(88,204,2,0.1)" : "rgba(28,176,246,0.1)",
+                                 (item as KhmerConsonant).series === "A" ? "rgba(88,204,2,0.1)" : "rgba(28,176,246,0.1)",
                       borderColor: !isCons ? "rgba(168,85,247,0.3)" :
-                                  item.series === "A" ? "rgba(88,204,2,0.3)" : "rgba(28,176,246,0.3)",
+                                  (item as KhmerConsonant).series === "A" ? "rgba(88,204,2,0.3)" : "rgba(28,176,246,0.3)",
                     }}
                   >
                     <span className="khmer-text text-3xl sm:text-4xl font-bold mb-1">{item.char}</span>
                     <span className="text-xs sm:text-sm font-bold opacity-80">
-                      {isCons ? item.phonetic : item.phoneticA}
+                      {isCons ? (item as KhmerConsonant).phonetic : (item as KhmerVowel).phoneticA}
                     </span>
                   </motion.button>
                 );
