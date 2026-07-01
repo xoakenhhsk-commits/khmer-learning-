@@ -93,24 +93,8 @@ export function Sidebar() {
         <div className={cn("flex items-center mb-8 px-2", isCollapsed && !isMobileOpen ? "flex-col gap-2 justify-center" : "justify-between")}>
           {(!isCollapsed || isMobileOpen) && (
             <Link to="/learn" className="flex items-center gap-3 overflow-hidden group/logo">
-              {/* KH Learn Logo SVG */}
-              <div className="w-11 h-11 rounded-2xl flex items-center justify-center flex-shrink-0 shadow-lg transition-transform duration-200 group-hover/logo:scale-110"
-                style={{
-                  background: "linear-gradient(135deg, #0F1B3C 0%, #1a3a6b 50%, #10B981 100%)",
-                  boxShadow: "0 4px 15px rgba(16,185,129,0.35)"
-                }}>
-                <svg width="26" height="26" viewBox="0 0 26 26" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  {/* Open Book */}
-                  <path d="M13 20C13 20 5 16.5 5 9V6C5 6 9 4.5 13 7C17 4.5 21 6 21 6V9C21 16.5 13 20 13 20Z" fill="#F5C842" fillOpacity="0.15" stroke="#F5C842" strokeWidth="1.2" strokeLinejoin="round"/>
-                  <line x1="13" y1="7" x2="13" y2="20" stroke="#F5C842" strokeWidth="1.2" strokeDasharray="2 1"/>
-                  {/* Stars */}
-                  <circle cx="8.5" cy="11" r="1" fill="#ffffff" fillOpacity="0.9"/>
-                  <circle cx="17.5" cy="11" r="1" fill="#ffffff" fillOpacity="0.9"/>
-                  <circle cx="13" cy="4" r="0.8" fill="#F5C842"/>
-                  {/* KH letters small */}
-                  <text x="9" y="17" fontSize="5" fontWeight="bold" fill="#ffffff" fontFamily="Arial">KH</text>
-                </svg>
-              </div>
+              {/* KH Learn Logo Image */}
+              <img src="/kh-learn-logo.png" className="w-11 h-11 rounded-2xl object-cover shadow-lg transition-transform duration-200 group-hover/logo:scale-110" alt="KH Learn Logo" />
               <div className="flex flex-col leading-tight">
                 <span className="text-lg font-black whitespace-nowrap tracking-tight"
                   style={{
@@ -126,20 +110,7 @@ export function Sidebar() {
           {/* Mini logo when collapsed on desktop */}
           {isCollapsed && !isMobileOpen && (
             <Link to="/learn" className="group/logo">
-              <div className="w-11 h-11 rounded-2xl flex items-center justify-center shadow-lg transition-transform duration-200 group-hover/logo:scale-110"
-                style={{
-                  background: "linear-gradient(135deg, #0F1B3C 0%, #1a3a6b 50%, #10B981 100%)",
-                  boxShadow: "0 4px 15px rgba(16,185,129,0.35)"
-                }}>
-                <svg width="26" height="26" viewBox="0 0 26 26" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M13 20C13 20 5 16.5 5 9V6C5 6 9 4.5 13 7C17 4.5 21 6 21 6V9C21 16.5 13 20 13 20Z" fill="#F5C842" fillOpacity="0.15" stroke="#F5C842" strokeWidth="1.2" strokeLinejoin="round"/>
-                  <line x1="13" y1="7" x2="13" y2="20" stroke="#F5C842" strokeWidth="1.2" strokeDasharray="2 1"/>
-                  <circle cx="8.5" cy="11" r="1" fill="#ffffff" fillOpacity="0.9"/>
-                  <circle cx="17.5" cy="11" r="1" fill="#ffffff" fillOpacity="0.9"/>
-                  <circle cx="13" cy="4" r="0.8" fill="#F5C842"/>
-                  <text x="9" y="17" fontSize="5" fontWeight="bold" fill="#ffffff" fontFamily="Arial">KH</text>
-                </svg>
-              </div>
+              <img src="/kh-learn-logo.png" className="w-11 h-11 rounded-2xl object-cover shadow-lg transition-transform duration-200 group-hover/logo:scale-110" alt="KH Learn Logo" />
             </Link>
           )}
           <button

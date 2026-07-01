@@ -271,17 +271,17 @@ export default function AlphabetPage() {
 
             <div className="card p-8 sm:p-12 text-center mb-8 relative overflow-hidden">
               <p className="text-sm font-bold text-gray-400 uppercase tracking-widest mb-4">
-                {isConsonant(quizQuestions[currentIndex]) ? "Chữ nào có phiên âm là" : "Nguyên âm nào có âm thanh"}
+                {quizQuestions[currentIndex] && isConsonant(quizQuestions[currentIndex]!) ? "Chữ nào có phiên âm là" : "Nguyên âm nào có âm thanh"}
               </p>
               <h2 className="text-5xl sm:text-6xl font-black text-blue-500">
-                {isConsonant(quizQuestions[currentIndex]) 
+                {quizQuestions[currentIndex] && (isConsonant(quizQuestions[currentIndex]!) 
                   ? (quizQuestions[currentIndex] as KhmerConsonant).phonetic 
-                  : (quizQuestions[currentIndex] as KhmerVowel).phoneticA + " / " + (quizQuestions[currentIndex] as KhmerVowel).phoneticO
+                  : (quizQuestions[currentIndex] as KhmerVowel).phoneticA + " / " + (quizQuestions[currentIndex] as KhmerVowel).phoneticO)
                 }
               </h2>
               
               <button 
-                onClick={() => playTTS(quizQuestions[currentIndex].char.replace("◌", "ក"))}
+                onClick={() => quizQuestions[currentIndex] && playTTS(quizQuestions[currentIndex]!.char.replace("◌", "ក"))}
                 className="mt-6 mx-auto w-12 h-12 flex items-center justify-center rounded-full bg-blue-100 text-blue-500 hover:bg-blue-200 transition-colors"
               >
                 <Volume2 size={24} />

@@ -90,7 +90,7 @@ export default function RegisterPage() {
 
         <div className="card p-8">
           <div className="text-center mb-8">
-            <div className="text-5xl mb-3">🇰🇭</div>
+            <img src="/kh-learn-logo.png" className="w-16 h-16 rounded-2xl mx-auto mb-3 object-cover shadow-md" alt="KH Learn Logo" />
             <h1 className="text-2xl font-black">Tạo tài khoản</h1>
             <p className="text-sm mt-1" style={{ color: "var(--text-muted)" }}>Bắt đầu hành trình học tiếng Khmer</p>
           </div>
